@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hellomart.dao.QABoardDAO">
+
+	<select id="getCount" resultType="int">
+		SELECT count(*) FROM QABoard
+		<where>
+			<if test="searchOption != null">
+			<choose>
+				<when test="searchOption == 'subject'">
+					subject
+				</when>
+				<when test="searchOption == 'content'">
+					content
+				</when>
+				<when test="searchOption == 'id'">
+					id
+				</when>
+			</choose>
+				like '%${keyword}%'
+			</if>
+		</where>
+	</select>
+	
+	<select id="list" parameterType="hashmap" resultType="QABoard">
+		select * from qaboard 
+		<where>
+			<if test="searchOption != null">
+			<choose>
+				<when test="searchOption == 'subject'">
+					subject
+				</when>
+				<when test="searchOption == 'content'">
+					content
+				</when>
+				<when test="searchOption == 'id'">
+					id
+				</when>
+			</choose>
+				like '%${keyword}%'
+			</if>
+		</where>
+		order by 1 desc limit #{offset}, #{limit}
+	</select>
+	
+	<insert id="insertQABoard">
+		INSERT INTO
+		
+		QABoard (subject, content, id,  count)
+		
+		VALUES (#{subject}, #{content}, #{id}, 0);
+	</insert>
+	
+	<update id="cmtinc" parameterType="Integer">
+		update QABoard set cmt=cmt+1 where idx=#{param1} 
+	</update>
+	
+	<update id="cmtdec" parameterType="Integer">
+		update QABoard set cmt=cmt-1 where idx=#{param1} 
+	</update>
+	
+	<update id="viewCount">
+		UPDATE QABoard SET count=count+1 WHERE idx=#{idx}
+	</update>
+	
+	<select id="viewQABoard" resultType="QABoard">
+		SELECT * FROM QABoard WHERE idx = #{idx}
+	</select>
+	
+	<!-- 글 수정 쿼리 -->
+	<update id="modify">
+		UPDATE QABoard SET 
+		subject=#{subject}, content=#{content}, modate=sysdate() 
+		WHERE idx=#{idx}
+	</update>
+	
+	<!-- 글 삭제 쿼리 -->
+	<delete id="delete">
+		DELETE FROM QABoard WHERE idx = #{idx}
+	</delete>
+	
+</mapper>

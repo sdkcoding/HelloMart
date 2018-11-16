@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+    
+	<http auto-config="true" use-expressions="true">
+	    <intercept-url pattern="/**/*.js" access="permitAll"/>     
+    	<intercept-url pattern="/**/*.css" access="permitAll"/>
+    	<intercept-url pattern="/resources/**/*" access="permitAll"/>
+		
+		<!-- 로그인 페이지는 로그인 되지 않은 유저만 접근 가능하다. -->
+		<intercept-url pattern="/login" access="isAnonymous()"/>
+
+		<intercept-url pattern="/mypage/**" access="hasAnyRole('ROLE_MEMBER', 'ROLE_SELLER')" />
+		<intercept-url pattern="/seller/**" access="hasRole('ROLE_SELLER')" />
+		<intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/authenticated/**" access="isAuthenticated()"/>
+		<intercept-url pattern="/**" access="permitAll" />
+		
+		<form-login
+			login-page="/login"
+			username-parameter="id"
+			password-parameter="pw"
+			login-processing-url="/login"
+			authentication-failure-handler-ref="authenticatedFailurHandler"
+			default-target-url="/"
+			always-use-default-target="false"
+		/>
+		<!-- 
+			login-page: 로그인  페이지
+			username-parameter": form 태그에서 사용할 id 태그 이름 지정
+			password-parameter: form 태그에서 사용할 password 태그 이름 지정
+			login-processing-url: form 태그의 action 값 지정
+			authentication-failure-handler-ref: 로그인 실패시 사용할 핸들러 지정
+			default-target-url: 로그인 성공시 이동할 페이지
+			always-use-default-target: false이면 로그인 성공시 원래 이동하려던 페이지로 이동한다.
+									   true 이면 항상 default-target-url에 명시된 페이지로 이동한다.
+		 -->
+
+		<logout 
+			logout-url="/logout"
+			logout-success-url="/"
+			invalidate-session="true"
+		/>
+		
+		<!-- 접근 권한이 없는 유저가 접근시 이동할 에러 페이지 설정 -->
+		<access-denied-handler error-page="/error/403"/>
+		
+		<!-- csrf 기능은 꺼둔다. 잘 모르니까!!! -->
+		<csrf disabled="true"/>
+	</http> 
+
+    <authentication-manager>
+    	<authentication-provider ref="userProvider"/>
+	</authentication-manager>
+
+	<beans:bean id="authenticatedFailurHandler" class="com.hellomart.authentication.CustomAuthenticationFailurHandler" />
+	<beans:bean id="userProvider" class="com.hellomart.authentication.CustomAuthenticationProvider" />
+	<beans:bean id="userService" class="com.hellomart.authentication.CustomUserDetailsService" />    		
+	
+</beans:beans>

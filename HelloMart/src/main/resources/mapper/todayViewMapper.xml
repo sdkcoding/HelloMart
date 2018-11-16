@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hellomart.dao.TodayViewDAO">
+	<select id="list" resultType="ProductList">
+		SELECT
+	        no, productName, mainCategory, smallCategory, imagePath, mfCompany, price, score, orderCount
+	    FROM
+	        productlist
+	    <where>
+	    <if test="array != null">
+		        <foreach collection="array" item="item" index="index" separator="or">
+		            no = #{item}
+		        </foreach>
+	    </if>
+	    <if test="array == null">
+	    	no = -1
+	    </if>
+	    </where>
+	</select>
+</mapper> 

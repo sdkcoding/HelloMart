@@ -1,0 +1,43 @@
+@CHARSET "UTF-8";
+
+/* 로그인 버튼 */
+.buttonlogin { position:absolute; left: 0px; top: 155px; width:270px; margin:10px 0 0;}
+.buttonlogin span a { width:100%; line-height:14px; padding:10px 0; text-align:center; margin:0; letter-spacing:1.5px;}
+.btnlogin { display:inline-block; height:36px; border:1px solid #333; margin-top:46px; letter-spacing:-1px;  background:#333; color:#fff;  font-family: Tahoma, 'Roboto', arial; }
+.btnlogin:hover{ background:#fff ; color:#333; cursor: pointer;}
+
+/* 회원가입,아이디찾기 버튼 */
+.btnlogin1 { display:inline-block;border:1px solid #ddd; margin:0 2px;letter-spacing:-1px;background:#f2f2f2; color:#333;  font-family: Tahoma, 'Roboto', 'arial'; font-size:11px; text-decoration: none; }
+.btnlogin1:hover{ background:#333;border:1px solid #333; color:#fff;}
+.buttonlogin1 span a { width:100%;line-height:14px;padding:10px 0;font-size:13px;text-align:center;margin:0;letter-spacing:0.5px; text-decoration: none;}
+
+/* 로그인 중앙 화면 */
+#loginWrap { padding-bottom:0px;}
+#loginWrap .page-body { width: 700px; margin-top: 55px; margin-bottom: 50px; margin-left: auto; margin-right: auto; border: 0px solid #e5e5e5;  }
+#loginWrap .mlog-sign { width: 700px; min-height: 206px;  position: relative; }
+#loginWrap .mlog-sign .mlog, #loginWrap .mlog-sign .sign { float: left; }
+#check { position: absolute; top: 170px;}
+
+/* member login */
+#loginWrap { margin-bottom: 0px;}
+#loginWrap .mlog-sign .mlog { position: relative; width: 350px;}
+#loginWrap .mlog-sign .frm-list { position: absolute; padding: 0; left: 0px; top: 0px; width: 350px; color: #3F3F3F; text-decoration:none; font-size:10pt; }
+#loginWrap .mlog-sign .frm-list li,
+#loginWrap .mlog-sign .frm-list .id { overflow:hidden;display:block;width:300px;margin:0 0 2px; line-height:32px; }
+#loginWrap .mlog-sign .frm-list .pwd { overflow:hidden;display:block;width:300px;margin:0 0 2px; line-height:32px; }
+#loginWrap .mlog-sign .frm-list input { width:270px;height:30px;padding:2px 0 2px 0;line-height:23px; border:1px solid #d9d9d9;  float: left; border:none; background-color:#f2f2f2; }
+#loginWrap .mlog-sign .frm-list li label,
+#loginWrap .mlog-sign .frm-list li .txt-frm { float: left; }
+#loginWrap .mlog-sign .frm-list li { width: 100%; margin-bottom: 5px; }
+#loginWrap .mlog-sign .frm-list li label { width: 300px; padding-top: 2px; font-weight:100; }
+#loginWrap .mlog-sign .btn-mlog { position: absolute; left: 316px; top: 110px; }
+#loginWrap .mlog-sign .frm-list .id .name {float:left;}
+#loginWrap .mlog-sign .frm-list .pwd .name {float:left;}
+
+/* sign */
+#loginWrap .mlog-sign .sign { position:absolute; left: 428px; top: 17px;  width: 280px;  text-align: center; border: 0px solid #000;   }
+#loginWrap .mlog-sign .sign .msg { text-align:left;padding:5px 0; line-height:14px; color: #3F3F3F; text-decoration:none; font-size:10pt;font-family: 'Nanum Gothic',돋움;  }
+
+.error {
+	color: red;
+}

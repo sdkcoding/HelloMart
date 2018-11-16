@@ -1,0 +1,63 @@
+# 실행파일 제외하기
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# 문서 형식 파일 제외하기
+*.pptx
+*.docx
+*.ppt
+*.pptx
+*.xls
+*.xlsx
+*.pdf
+
+# 패키지 파일 제외하기
+*.7z
+*.dmg
+*.gz
+*.iso
+*.rar
+*.tar
+*.zip
+# *.jar
+
+# 로그 파일, 업로드 폴더 제외하기
+*.log
+upload/
+logs/
+
+# 맥, 윈도우용 시스템 파일 제외하기
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 이클립스용 설정 파일 제외하기
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+.project
+.externalToolBuilders/
+*.launch
+.classpath
+.factorypath
+.buildpath
+.target
+.tern-project
+.springBeans
+.recommenders/

@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<카테고리>
+	<가전제품>
+		<냉장고 table="Refrigerator">
+			<냉장용량 column="ColdStorageCapacity" type="Integer">
+				951L~1000L, 901L~950L, 851L~900L, 801L~850L, 701L~800L,
+				601L~700L, 501L~600L, 401L~500L, 301L~400L, 201L~300L
+			</냉장용량>
+			<냉동용량 column="FreezeCapacity" type="Integer">
+				601L~700L, 501L~600L, 401L~500L, 301L~400L, 201L~300L
+			</냉동용량>
+			<도어수 column="DoorNumber" type="Enum">
+				4도어냉장고, 3도어냉장고, 양문형냉장고, 일반형냉장고
+			</도어수>
+			<소비전력 column="PowerConsumption" type="Double">
+				20.0kWh~21.9kWh, 22.0kWh~23.9kWh, 24.0kWh~25.9kWh,
+				26.0kWh~27.9kWh, 28.0kWh~29.9kWh, 30.0kWh~31.9kWh
+			</소비전력>
+			<에너지효율 column="EnergyEfficiency" type="Enum">
+				1등급, 2등급, 3등급, 4등급, 5등급
+			</에너지효율>
+		</냉장고>
+		
+		<오븐_전자레인지 table="Microwave">
+			<용량 column="Capacity" type="Integer">
+				25L, 24L, 23L, 22L, 21L, 20L
+			</용량>
+			<조작방식 column="ControlMethod" type="Enum">
+				다이얼식, 버튼식, 버튼+다이얼식
+			</조작방식>
+			<소비전력 column="PowerConsumption" type="Integer">
+				700W, 1050W, 1100W, 1570W 
+			</소비전력>
+			<출력 column="Watt" type="Integer">
+				700W, 1000W
+			</출력>
+		</오븐_전자레인지>
+
+		<청소기 table="Cleaner">
+			<유무선여부 column="WireLess" type="Enum">
+				유선, 무선
+			</유무선여부>
+			<충전시간 column="ChargingTime" type="Integer">
+				0~2시간, 3~4시간, 5~7시간
+			</충전시간>
+		</청소기>
+
+		<에어컨 table="AirConditioner">
+			<사용면적 column="SquareMeasure" type="Double">
+				22.8m², 32.5m², 48.8m², 52.8m², 65.9m², 75.5m²
+			</사용면적>
+			<냉방효율 column="Cooling" type="Double"> 
+				7.5, 7.7, 7.8, 7.9, 8.0, 8.2, 8.5
+			</냉방효율>
+			<제습운전 column="Dehumidification" type="Enum">
+				가능, 불가능
+			</제습운전>
+			<공기청정 column="AirPurification" type="Enum">
+				가능, 불가능
+			</공기청정>
+			<저소음 column="LowNoise" type="Enum">
+				가능, 불가능
+			</저소음>
+			<타입 column="Type" type="Enum">
+				복합형, 스탠드형, 벽걸이형
+			</타입>
+		</에어컨>
+
+		<세탁기 table="Washer">
+			<세탁용량 column="WashingCapacity" type="Integer">
+				14kg,15kg,16kg,17kg,19kg
+			</세탁용량>
+			<에너지효율 column="EnergyEfficiency" type="Enum">
+				1등급, 2등급, 3등급, 4등급, 5등급
+			</에너지효율>
+			<세탁방식 column="WashingType" type="Enum">
+				통돌이, 세탁전용, 공기방울
+			</세탁방식>
+		</세탁기>
+		
+		<공기청정기 table="AirPurifier">
+			<공기청정방식 column="Method" type="Enum">
+				필터식청정, 복합식청정, 음이온식청정 ,산림욕식청정
+			</공기청정방식>
+			<사용면적 column="UsableArea" type="Integer">
+				17㎡,33㎡,50㎡,66㎡,99㎡
+			</사용면적>
+			<필터방식 column="FilterType" type="Enum">
+				필터, 헤파필터
+			</필터방식>
+			<소비전력 column="PowerConsumption" type="Integer">
+				1W~10W, 10W~100W, 100W~500W, 500W~1000W
+			</소비전력>
+		</공기청정기>
+	</가전제품>
+	
+	<IT>
+		<노트북 table="Notebook">
+			<CPU브랜드 column="CpuMfCompany" type="Enum">
+				Intel, AMD
+			</CPU브랜드>
+			<CPU분류 column="CpuKind" type="Enum">
+      			셀러론, I3, I5, I7, 라이젠3, 라이젠5, 라이젠7
+   			</CPU분류>	
+			<CPU코어수 column="CpuCore" type="Enum">
+				2(듀얼), 4(쿼드), 6(헥사), 8(옥타)
+			</CPU코어수>
+			<저장소종류 column="StoreageKind" type="Enum">
+				SSD, HDD
+			</저장소종류>
+			<저장소용량 column="HardCap" type="Integer">
+      			0~200GB, 201~300GB, 301GB~500GB, 500GB~1000GB
+  			</저장소용량>
+      		<화면크기 column="ScreenSize" type="Double">
+            	0~11.6, 13.3~15.0, 15.6~30
+       		</화면크기>
+    		<해상도 column="Resolution" type="String">
+				1024X768, 1280X800, 1280X1024, 1360X768, 1440X900, 1600X900, 
+				1600X1050, 1600X1200, 1680X1050, 1920X1080, 1920X1200, 
+				1920X1920, 2560X1080, 2560X1440, 2560X1600, 3440X1440, 
+				3840X1080, 3840X1600, 3840X2160, 4096X2160, 5120X2880
+    		</해상도>
+		</노트북>
+		
+		<데스크탑 table="Desktop">
+			<데스크탑형태 column="Shape" type="Enum">
+				AllInOne, WorkStation, BareBones
+			</데스크탑형태>
+			<CPU브랜드 column="CpuMfCompany" type="Enum">
+				Intel, AMD
+			</CPU브랜드>
+			<CPU분류 column="CpuKind" type="Enum">
+       			 셀러론, I3, I5, I7, 라이젠3, 라이젠5, 라이젠7
+   			</CPU분류> 
+			<CPU코어수 column="CpuCore" type="Enum">
+				2(듀얼), 4(쿼드), 6(헥사), 8(옥타)
+			</CPU코어수>
+			<저장소종류 column="StoreageKind" type="Enum">
+				SSD, HDD
+			</저장소종류>
+			<저장소용량 column="HardCap" type="Integer">
+      			0~200GB, 201~300GB, 301GB~500GB, 500GB~1000GB
+   			</저장소용량>
+       		<화면크기 column="ScreenSize" type="Double">
+            	0~20.0, 20.1~40.0, 40.1~60.0
+       		</화면크기>
+    		<해상도 column="Resolution" type="String">
+				1024X768, 1280X800, 1280X1024, 1360X768, 1440X900, 1600X900, 
+				1600X1050, 1600X1200, 1680X1050, 1920X1080, 1920X1200, 
+				1920X1920, 2560X1080, 2560X1440, 2560X1600, 3440X1440, 
+				3840X1080, 3840X1600, 3840X2160, 4096X2160, 5120X2880
+       		</해상도>		
+		</데스크탑>
+
+		<모니터 table="Monitor"> 
+			<화면크기 column="ScreenSize" type="Double">
+				0~40.0, 40.1~60.0, 60.1~80.0, 80.1~100.0, 100.1~120.0,
+				120.1~150.0, 150.1~180.0
+			</화면크기>
+			<화면비율 column="Ratio" type="Enum">
+				21:9, 16:10, 16:9, 4:3
+			</화면비율>
+			<해상도 column="Resolution" type="String">
+				1024X768, 1280X800, 1280X1024, 1360X768, 1440X900, 1600X900, 
+				1600X1050, 1600X1200, 1680X1050, 1920X1080, 1920X1200, 
+				1920X1920, 2560X1080, 2560X1440, 2560X1600, 3440X1440, 
+				3840X1080, 3840X1600, 3840X2160, 4096X2160, 5120X2880			
+			</해상도>
+		</모니터>
+
+		<프린터 table="Printer">
+			<인쇄방식 column="Method" type="Enum">
+				잉크젯, 레이저 
+			</인쇄방식>
+			<인쇄종류 column="Type" type="Enum">
+				흑백, 컬러
+			</인쇄종류>
+			<인쇄속도 column="PPM" type="Integer">
+				11~20ppm, 21~25ppm, 26~30ppm, 31~35ppm, 36~40ppm
+			</인쇄속도>
+			<인쇄해상도 column="Resolution" type="Enum"> <!-- dpi -->
+				4800x1200, 5760x1440, 2400x600, 1200x1200, 9600x600
+			</인쇄해상도>
+			<스캔기능 column="Scan" type="Enum">
+				가능, 불가능
+			</스캔기능>
+			<복사기능 column="Duplication" type="Enum">
+				가능, 불가능
+			</복사기능>
+			<팩스기능 column="Fax" type="Enum">
+				가능, 불가능
+			</팩스기능>
+		</프린터>
+	</IT>
+
+	<모바일>
+		<스마트폰 table="Smartphone">
+			<모델 column="Model" type="String">
+    			갤럭시S, 갤럭시노트 , 갤럭시A/J, 아이폰, LG 시리즈 
+			</모델>
+			<운영체제 column="OS" type="Enum">
+				Android, iOS
+			</운영체제>
+			<배터리용량 column="Battery" type="Integer">
+				1500mAh~2000mAh, 2000mAh~3000mAh, 3000mAh~4000mAh
+			</배터리용량>
+			<액정종류 column="LCT" type="Enum">
+				Amoled, LCD
+			</액정종류>
+			<화면크기 column="SS" type="Double"> 
+				3.0inch~4.0inch, 4.1inch~4.5inch,
+				4.6inch~5.0inch, 5.1inch~5.5inch,
+				5.6inch~6.0inch, 6.1inch~7.0inch
+			</화면크기>
+		</스마트폰>
+
+		<태블릿 table="Tablet">
+			<모델 column="Model" type="String"> 
+				APPLE, 삼성전자, 레노버, LG전자,  Microsoft
+			</모델>
+			<운영체제 column="OS" type="Enum">
+				Android, iOS, Window
+			</운영체제>
+			<배터리용량 column="Battery" type="Integer">
+				2000mAh~3000mAh,3000mAh~4000mAh,
+				4000mAh~5000mAh,5000mAh~6000mAh,
+				6000mAh~7000mAh,7000mAh~8000mAh
+			</배터리용량>
+			<액정종류 column="LCT" type="Enum">
+				Amoled, LCD
+			</액정종류>
+			<화면크기 column="SS" type="Double"> 
+				6.0inch~7.0inch, 7.0inch~8.0inch,9.0inch~10.0inch,10.0inch~11.0inch,11.0inch~14.0inch
+			</화면크기>
+		</태블릿>
+	</모바일>
+</카테고리>

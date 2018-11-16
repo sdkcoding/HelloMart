@@ -1,0 +1,130 @@
+@CHARSET "UTF-8";
+@import url(http://fonts.googleapis.com/earlyaccess/nanumgothic.css);
+
+* { font-family: 'Gothic', 'Nanum Gothic'; }
+html, body { height: 100% }
+body, div, span, table, tr, td, ul, li, p, img {
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+	font-stretch: ultra-condensed;
+}
+body {
+	overflow-y: scroll;
+	font-size: 12px;
+}
+div { position: relative; }
+a { text-decoration: none; }
+a:HOVER{ text-decoration: none; }
+
+::selection {
+	background: #e8e8e8;
+	color: #705f8d;
+}
+
+/* common */
+.clear{clear: both;}
+.F_left{float: left;}
+.F_right{float: right;}
+.relative{position: relative;}
+.absolute{position: absolute;}
+.A_left{text-align: left;}
+.A_center{text-align: center;}
+.A_right{text-align: right;}
+.M_CENTER{margin: 0 auto;}
+
+.BLOCK20{width: 100%; height: 20px;}
+.BLOCK30{width: 100%; height: 30px;}
+.BLOCK40{width: 100%; height: 40px;}
+.BLOCK50{width: 100%; height: 50px;}
+.BLOCK60{width: 100%; height: 60px;}
+.BLOCK70{width: 100%; height: 70px;}
+.BLOCK80{width: 100%; height: 80px;}
+.BLOCK90{width: 100%; height: 90px;}
+.BLOCK95{width: 100%; height: 95px;}
+.BLOCK100{width: 100%; height: 100px;}
+.BLOCK160{width: 100%; height: 160px;}
+.BLOCK250{width: 100%; height: 250px;}
+.BLOCK370{width: 100%; height: 370px;}
+.BLOCK600{width: 100%; height: 600px;}
+
+/* header */
+.header_bar_wrap{
+	width: 100%; height: 39px; background-color: #f1f0f0;
+}
+.header_bar{
+	margin: 0 auto; width: 1006px; height: 39px;
+}
+.haeder_bar_menu{
+	height: 39px; line-height: 39px; margin-right: 24px; cursor: pointer; font-size: 13.5px; color: #333333;
+}
+.haeder_bar_menu_line{
+	width:1px; height: 39px; margin-right: 24px; background: url('../images/bar.PNG') no-repeat center center; z-index: 3;
+}
+.header_bg_wrap{
+	width: 100%; height: 140px; background-color: #fff;
+}
+.header_menu_wrap{
+	width: 100%; height: 55px; background-color: #015299;
+}
+.header_menu{
+	margin: 0 auto; width: 840px; height: 55px;
+}
+.header_menu_item{
+	width: 168px; height: 55px; text-align: center; line-height: 55px; font-size: 20px; color: #ffffff; cursor: pointer;
+}
+.header_menu_item:HOVER,
+.header_menu_item.on{
+	background-color: #003768;	
+}
+
+/* mega_menu */
+.mega_menu_wrap{
+	width: 100%; z-index: 1000;  margin: 0 auto;
+}
+.mega_menu{
+	width: 840px; height: 60px; margin: 0 auto; background: #f8f8f8; border: 1px dotted #b9b9b9; border-top: none;
+}
+.megamenu_menu_title1{
+	font-size: 16px; color: #666666; cursor: pointer; margin: 20px 37px;
+}
+.megamenu_menu_title2{
+	font-size: 16px; color: #666666; cursor: pointer; margin: 20px 45px;
+}
+.megamenu_menu_title1:HOVER,
+.megamenu_menu_title2:HOVER{
+	color: #015299;	
+	font-weight: bold;
+}
+
+/* titbox */
+.titbox { width:100%; height:40px; line-height:40px; background-color: #fff; border: 0px solid #EFEFEF; margin-top:50px; margin-bottom:50px;}
+.titbox .title {  width:250px;  text-align:center; height:40px; margin:0 auto; border-top: 1px solid #E1E1E1;  border-bottom: 1px solid #E1E1E1;}
+.titbox .title .name { font-weight:bold; font-size:12px; color:#333; text-transform:uppercase; font-family: 'Roboto', Arial,sans-serif,'Nanum Gothic'; }
+
+/* footer */
+.footer_wrap{
+	width: 100%; height: 149px; border-top: 1px solid #d9d9d9;
+}
+.footer_wrap_bg{
+	width: 1006px; height: 149px; margin: 0 auto;	
+}
+.footer_img{
+	width: 1006px; height: 148px; background: url('../images/footer1.png') no-repeat center center;
+}
+.footer_txt_box{
+	width: 114px; height: 27px; cursor: pointer;
+}
+
+.contents_wrap{
+	width: 1006px; margin: 0 auto;
+}
+
+.logo_wrap {
+	width: 1006px;
+	margin: auto;
+	user-select: none;
+}
+#logo a:focus {
+	outline:none;
+}

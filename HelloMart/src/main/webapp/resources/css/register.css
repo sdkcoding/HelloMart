@@ -1,0 +1,49 @@
+@CHARSET "UTF-8";
+/* 회원 가입 */
+html, body, pre,
+dl, dt, dd, ul, li, ol,
+th, td, p, blockquote,
+form, fieldset, legend,
+menu, nav, section, article, header, aside, footer,
+input, select, textarea, button {
+    margin: 0;
+    padding: 0;
+}
+
+#comment { resize:none; }
+
+#register_test { width:1300px; margin:0 auto; }
+#register_test h2 { margin:10px 0 30px 0; padding-bottom:5px; font-size:14px; font-weight:bold; color:#434343; border-bottom:3px solid #3a4452; }
+#register_test .box-wrap { width:70%; margin:0 auto; }
+#register_test .register-form { border-top:1px solid #dadada; border-left:1px solid #dadada; list-style:none; }
+#register_test .register-form li { position:relative; height:49px; line-height:49px; padding:0 23px; border-right:1px solid #dadada; border-bottom:1px solid #dadada; background:#fff; color:#000; }
+#register_test .register-form li label { position:absolute; top : 0; left: 20px; font-size:14px; font-weight:bold; }
+#register_test .register-form li .txt-input { position:absolute; top:0; left:150px; width:300px; height: 49px; line-height:49px; padding:0; margin:0; font-size: 14px; font-weight: bold; color:#000; border: 0; height: 48px; }
+#register_test .register-form li .unit{ position:absolute; top:13px; left:460px; height: 20px; line-height:20px; }
+#register_test .register-form li span.errors{ position:absolute; right:20px; color: red; }
+#register_test .register-form li .productImageFile {top:13px; height: 24px;}
+#pwCheck { position: absolute; left:290px; top:15px; }
+
+/* 버튼 */
+.new-btn-area { text-align: center; margin:0; padding: 20px 0 50px 0;}
+.new-btn-area input { display:block; width:234px; height:66px; line-height:66px; margin:0 auto; font-size:22px; font-weight:bold; color:#fff; background:#0549bb; border:1px solid #053688; }
+.btnlogin {
+	display: inline-block;
+	border: 1px solid #ddd;
+	margin: 5px 2px;
+	background: #f2f2f2;
+	color: #333;
+	font-family: Tahoma, 'Roboto', 'arial';
+	font-size: 15px;
+	font-weight: bold;
+	line-height: 35px;
+	height: 35px;
+	width: 270px;
+	margin: 0;
+}
+
+.btnlogin:hover {
+	background: #333;
+	border: 1px solid #fff;
+	color: #fff;
+}

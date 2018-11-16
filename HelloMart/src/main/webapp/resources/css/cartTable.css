@@ -1,0 +1,89 @@
+@CHARSET "UTF-8";
+
+.join-form { width: 65%;  border-top:1px solid #dadada; border-left:1px solid #dadada; list-style:none; margin-top: 50px;}
+.join-form li { position:relative; height:49px; line-height:49px; padding:0 23px; border-right:1px solid #dadada; border-bottom:1px solid #dadada; background:#fff; color:#000; }
+.join-form li label { font-size:14px; font-weight:bold; }
+.new-btn-area { text-align: center; margin:20px 0 10px 0;}
+.new-btn-area input { display:block; width:234px; height:64px; font-size:22px; font-weight:bold; color:#fff; background:#333; }
+.btn01 {
+	display: inline-block;
+	*display: inline;
+	padding: 2px 10px;
+	height: 25px;
+	line-height: 10px;
+	background-color: #636363;
+	border: 1px solid #EFEFEF;
+	color: #fff;
+	text-decoration: none;
+	font-size: 10pt;
+	letter-spacing: 2px;
+}
+
+.btn01:hover { background-color: #0549bb; }
+.board_btn01 {
+	display: inline-block;
+	*display: inline;
+	padding: 2px 7px;
+	height: 25px;
+	line-height: 10px;
+	background-color: #636363;
+	border: 1px solid #EFEFEF;
+	color: #fff;
+	text-decoration: none;
+	font-size: 10pt;
+	font-family: 'Nanum Gothic', 돋움;
+	letter-spacing: 0px;
+}
+.board_btn01:hover {
+	background-color: #000;
+	border: 1px solid #EFEFEF;
+	color: #fff;
+}
+#cartBuy {
+	width: 100%;
+	margin-bottom: 50px;
+}
+#cartBuy tr{
+	text-align: center;
+	border: 1px dotted #ababab;
+	border-left: none;
+	border-right: none;
+	height: 30px;
+}
+#cartBuy tr th{
+	text-align: center;
+	background-color: #ececec;
+	border: 1px solid #ababab;
+	border-left: none;
+	border-right: none;
+}
+#cartBuy tr td{ 
+	text-align: center;
+	height: 50px;
+}
+#total{
+	width: 28%; 
+	float: right; 
+	margin-right: 20px;
+}
+#cart_list table tr{
+	text-align: center;
+	border: 1px dotted #ababab;
+	border-left: none;
+	border-right: none;
+	height: 30px;
+}
+
+#cart_list table tr th{
+	text-align: center;
+	background-color: #ececec;
+	border: 1px solid #ababab;
+	border-left: none;
+	border-right: none;
+}
+#cart_list table tr td{ 
+	text-align: center;
+}
+td {
+	text-align: right;
+}

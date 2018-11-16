@@ -1,0 +1,1104 @@
+/* 
+- 유저 생성
+ create user jspid@localhost identified by 'jsppass';
+ grant all privileges on *.* to jspid@localhost identified by 'jsppass' with grant option;
+ 
+- 데이터 베이스 생성 구문
+ DROP DATABASE IF EXISTS Hellomart;
+ CREATE DATABASE HelloMart;
+ USE HelloMart;
+ */
+
+DROP TABLE IF EXISTS Account;
+
+CREATE TABLE Account (
+ID 		 CHAR(20),
+Password	 	 CHAR(16) NOT NULL,
+Role		 ENUM('MEMBER', 'SELLER', 'ADMIN') DEFAULT 'MEMBER'  NOT NULL,
+Points		 INT DEFAULT 0 NOT NULL, 
+Grade		 TINYINT DEFAULT 0 NOT NULL,  /* 등급 숫자로 포인트 적립 가중치 */
+Email		 VARCHAR(100) NOT NULL,
+PostCode		 CHAR(5) NOT NULL,
+RoadAddress	 VARCHAR(50) NOT NULL,
+DetailAddress	 VARCHAR(50) NOT NULL,
+Phone		 CHAR(11) NOT NULL,
+Name		 CHAR(20) NOT NULL,
+BirthYear		 CHAR(4) NOT NULL,
+BirthMonth	 CHAR(2) NOT NULL,
+BirthDay		 CHAR(2) NOT NULL,
+Gender		 ENUM('F','M') NOT NULL,
+Reliability		 INT DEFAULT NULL,   /* 판매자만 신뢰도 가짐 */
+JoinDate		 TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+Apply		 ENUM('SELLER_READY', 'NOTHING') DEFAULT 'NOTHING' NOT NULL
+);
+
+ALTER TABLE Account ADD CONSTRAINT acc_id_pk PRIMARY KEY(ID);
+ALTER TABLE Account ADD CONSTRAINT acc_email_uk UNIQUE(Email);
+
+INSERT INTO Account (ID, Password, Role, Email, PostCode, RoadAddress, DetailAddress, Phone, Name, BirthYear, BirthMonth, BirthDay, Gender) 
+VALUES ('papayaza111', 'practice123', 'MEMBER', 'papayaza111@gmail.com', 'post', 'road', 'detail',  '01012345678', 'jjw', '2000', '3', '1', 'F');
+
+INSERT INTO Account (ID, Password, Role, Email, PostCode, RoadAddress, DetailAddress , Phone, Name, BirthYear, BirthMonth, BirthDay, Gender) 
+VALUES ('papayaza222', 'practice123', 'SELLER', 'papayaza222@gmail.com', 'post', 'road', 'detail', '01012345678', 'jjw', '2000', '3', '1', 'F');
+
+
+
+INSERT INTO Account (ID, Password, Role, Email, PostCode, RoadAddress, DetailAddress , Phone, Name, BirthYear, BirthMonth, BirthDay, Gender) 
+VALUES ('papayaza999', 'practice123', 'ADMIN', 'papayaza999@gmail.com', 'post', 'road', 'detail', '01012345678', '홍길동', '2000', '3', '1', 'F');
+
+DROP TABLE IF EXISTS ProductList;
+
+CREATE TABLE ProductList (
+No		 INT AUTO_INCREMENT PRIMARY KEY, 
+ProductName	 VARCHAR(50) NOT NULL,
+MainCategory	 CHAR(20)  NOT NULL,
+SmallCategory 	 CHAR(20) NOT NULL,
+ImagePath	 VARCHAR(256) NOT NULL,
+OrderCount	 INT DEFAULT 0 NOT NULL,
+Score		 INT DEFAULT 0 NOT NULL,
+ProdDate		 Date NOT NULL,	
+MfCompany	 CHAR(30) NOT NULL,
+Price		 INT NOT NULL,
+Weight		 DECIMAL(9, 2) NOT NULL,
+RegisterID	 CHAR(32) NOT NULL,
+Comment		 VARCHAR(100),
+ReviewCount	  INT DEFAULT 0 NOT NULL,
+RegisterDate	 TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+ALTER TABLE ProductList
+ADD CONSTRAINT prolist_rid_fk FOREIGN KEY(RegisterID) REFERENCES Account (ID) ON DELETE CASCADE;
+
+
+/*냉장고*/
+DROP TABLE IF EXISTS Refrigerator;
+
+CREATE TABLE Refrigerator(
+No		 	INT NOT NULL,
+ColdStorageCapacity 	INT,				/*냉장용량*/
+FreezeCapacity 	 	INT,				/*냉동용량*/
+DoorNumber 	 	ENUM('일반형냉장고', '양문형냉장고', '3도어냉장고', '4도어냉장고'), /*도어수*/
+PowerConsumption 	DECIMAL(3, 1),		/*소비전력*/
+EnergyEfficiency 		ENUM('1등급', '2등급', '3등급', '4등급', '5등급')		/*에너지효율*/
+);
+
+ALTER TABLE Refrigerator
+ADD CONSTRAINT refrigerator_no_fk FOREIGN KEY(No) REFERENCES ProductList (No) ON DELETE CASCADE;
+
+/*전자레인지_오븐*/
+DROP TABLE IF EXISTS Microwave;
+
+CREATE TABLE Microwave(
+No 			INT NOT NULL,				
+Capacity 			INT,				/*용량*/
+ControlMethod 		ENUM('버튼식', '다이얼식', '버튼+다이얼식'), /*조작방식*/
+PowerConsumption 	INT,				/*소비전력*/
+Watt			 INT			/*출력*/
+);
+
+ALTER TABLE Microwave
+ADD CONSTRAINT microwave_no_fk FOREIGN KEY(No) REFERENCES ProductList (No) ON DELETE CASCADE;
+
+
+DROP TABLE IF EXISTS Cleaner;
+
+/* 청소기 */
+CREATE TABLE Cleaner(
+No 		 INT NOT NULL,
+WireLess 		 ENUM('유선','무선') NOT NULL,
+ChargingTime 	 INT,
+CONSTRAINT cleaner_no_fk FOREIGN KEY(No) REFERENCES ProductList(No) ON DELETE CASCADE
+);
+
+
+DROP TABLE IF EXISTS Washer;
+
+/* 세탁기 */
+CREATE TABLE Washer(
+No INT NOT NULL,
+WashingCapacity INT NOT NULL,
+EnergyEfficiency enum('1등급','2등급','3등급','4등급','5등급')  NOT NULL,  
+WashingType ENUM('통돌이', '세탁전용', '공기방울') NOT NULL,  
+CONSTRAINT washer_no_fk FOREIGN KEY(No) REFERENCES ProductList(No) ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS AirConditioner;
+
+/* 에어컨 */
+CREATE TABLE AirConditioner(
+No INT NOT NULL,
+SquareMeasure DECIMAL(3, 1) NOT NULL,  /* 사용면적 */
+Cooling DECIMAL(2, 1) NOT NULL,  /* 냉방 효율 */
+Dehumidification ENUM('가능', '불가능') NOT NULL,  /* 제습운전가능여부 */
+AirPurification ENUM('가능','불가능') NOT NULL, /* 공기청정기능여부 */
+LowNoise ENUM('가능','불가능') NOT NULL, /* 저소음운전가능여부 */
+Type ENUM('복합형', '스탠드형', '벽걸이형') NOT NULL,
+CONSTRAINT airconditioner_no_fk FOREIGN KEY(No) REFERENCES ProductList(No) ON DELETE CASCADE
+);
+
+/*공기청정기_가습기*/
+DROP TABLE IF EXISTS AirPurifier;
+
+CREATE TABLE AirPurifier(
+No 			INT NOT NULL,
+Method 			ENUM('필터식청정','복합식청정','음이온식청정','산림욕식청정'),        /*공기청정방식*/
+UsableArea 		INT,			/*사용면적*/
+FilterType 		ENUM('필터','헤파필터'),	/*필터종류*/
+PowerConsumption 	INT	/*소비전력*/
+);
+
+ALTER TABLE AirPurifier
+ADD CONSTRAINT airpurifier_no_fk FOREIGN KEY(No) REFERENCES ProductList (No) ON DELETE CASCADE;
+
+DROP TABLE IF EXISTS Monitor;
+
+/* 모니터 */
+CREATE TABLE Monitor(
+No INT NOT NULL,
+ScreenSize DECIMAL(4, 1) NOT NULL,
+Ratio ENUM('21:9', '16:10', '16:9', '4:3') NOT NULL,
+Resolution CHAR(9) NOT NULL,
+CONSTRAINT monitor_no_fk FOREIGN KEY(No) REFERENCES ProductList(No) ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS Printer;
+
+/*프린터*/
+CREATE TABLE Printer(
+No INT NOT NULL,
+Method ENUM('잉크젯', '레이저'),
+Type ENUM('흑백','컬러'),
+PPM INT NOT NULL,  /* 인쇄 속도 */
+Resolution ENUM('4800x1200','5760x1440','1200x1200','2400x600','9600x600'),
+Scan ENUM('가능','불가능'),  /* 스캔 기능 유무 */
+Duplication ENUM('가능','불가능'),  /* 복사 기능 유무 */
+Fax ENUM('가능','불가능') /* 팩스 기능 유무 */
+);
+ALTER TABLE Printer Add CONSTRAINT prin_no_fk FOREIGN KEY(No) REFERENCES ProductList(NO) ON DELETE CASCADE;
+
+/*데스크탑*/
+DROP TABLE IF EXISTS Desktop;
+
+CREATE TABLE Desktop(
+No INT NOT NULL,
+Shape ENUM('AllInOne', 'WorkStation', 'BareBones') NOT NULL,   /*데스크탑 형태*/
+CpuMfCompany ENUM('Intel', 'AMD') NOT NULL,
+CpuKind enum('셀러론', 'I3', 'I5', 'I7', '라이젠3', '라이젠5', '라이젠7') NOT NULL,
+CpuCore ENUM('2(듀얼)', '4(쿼드)', '6(헥사)', '8(옥타)') NOT NULL,
+StoreageKind ENUM('SSD', 'HDD') NOT NULL,
+HardCap SMALLINT NOT NULL,
+ScreenSize DECIMAL(3, 1) NOT NULL,
+Resolution CHAR(9) NOT NULL
+);
+
+ALTER TABLE Desktop
+ADD CONSTRAINT desktop_no_fk FOREIGN KEY(No) REFERENCES ProductList(No) ON DELETE CASCADE;
+
+/*노트북*/
+DROP TABLE IF EXISTS Notebook;
+
+CREATE TABLE Notebook (
+No INT NOT NULL,
+CpuMfCompany ENUM('Intel', 'AMD') NOT NULL,
+CpuKind enum('셀러론', 'I3', 'I5', 'I7', '라이젠3', '라이젠5', '라이젠7') NOT NULL,
+CpuCore ENUM('2(듀얼)', '4(쿼드)', '6(헥사)', '8(옥타)') NOT NULL,
+StoreageKind ENUM('SSD', 'HDD') NOT NULL,
+HardCap SMALLINT NOT NULL,
+ScreenSize DECIMAL(3, 1) NOT NULL,
+Resolution CHAR(9) NOT NULL
+);
+
+ALTER TABLE Notebook
+ADD CONSTRAINT notebook_no_fk FOREIGN KEY(No) REFERENCES ProductList(No) ON DELETE CASCADE;
+
+
+DROP TABLE IF EXISTS Smartphone;
+
+/*스마트*/
+CREATE TABLE Smartphone(
+No		 INT NOT NULL,
+Model		 enum('갤럭시S', '갤럭시노트', '갤럭시A/J', '아이폰', 'LG 시리즈') NOT NULL,
+OS		 ENUM('Android','iOS'),
+Battery 		 INT NOT NULL,
+LCT		 ENUM('Amoled','LCD'),
+SS 		 DECIMAL(5, 2) NOT NULL,  /* 화면크기 */
+CONSTRAINT smat_no_fk FOREIGN KEY(No) REFERENCES ProductList(No) ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS Tablet;
+
+/*태블릿*/
+CREATE TABLE Tablet(
+No		 INT NOT NULL,
+Model		 enum('APPLE', '삼성전자', '레노버', 'LG전자',  'Microsoft') NOT NULL,
+OS		 ENUM('Android','iOS','Window'),
+Battery		 INT NOT NULL,
+LCT		 ENUM('Amoled','LCD'),
+SS 		 DECIMAL(5, 2) NOT NULL,  /* 화면크기 */
+CONSTRAINT tab_tno_fk FOREIGN KEY(No) REFERENCES ProductList(No) ON DELETE CASCADE
+);
+
+
+
+DROP TABLE IF EXISTS orderList;
+
+/* 주문 */
+CREATE TABLE OrderList(
+Idx			 INT AUTO_INCREMENT PRIMARY KEY, 
+OrderId			 CHAR(32) NOT NULL,
+ReceiverName		 CHAR(5) NOT NULL,
+ReceiverPhone		 CHAR(15) NOT NULL,
+ProdNo 			 INT NOT NULL,
+OrderCount		 INT NOT NULL,
+OrderDate 		 TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+OrderPrice		 int NOT NULL,    /* 옵션(?) + 원가 x 수량 */
+ReceiverPostCode	 CHAR(5) NOT NULL,
+ReceiverRoadAddress	 VARCHAR(50) NOT NULL,
+ReceiverDetailAddress	 VARCHAR(50) NOT NULL,
+OrderStatus 		 ENUM('PAY_WAIT', 'PAY_OK', 'SEND_WAIT', 'SEND_OK') not null,
+CONSTRAINT ord_id_fk FOREIGN KEY(OrderId) REFERENCES Account(ID) ON DELETE CASCADE,
+CONSTRAINT ord_prodno_fk FOREIGN KEY(ProdNo ) REFERENCES ProductList(No) ON DELETE CASCADE
+);
+
+
+
+DROP TABLE IF EXISTS CartList;
+
+/* 장바구니 */
+CREATE TABLE CartList (
+Idx 		INT AUTO_INCREMENT PRIMARY KEY,
+Id 			CHAR(20) NOT NULL,
+No 		INT NOT NULL,
+Date 		TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+OrderCount 		INT NOT NULL,
+CONSTRAINT cl_id_fk FOREIGN KEY (Id) REFERENCES Account (Id) ON DELETE CASCADE,
+CONSTRAINT cl_no_fk FOREIGN KEY (No) REFERENCES ProductList (No) ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS Review;
+
+/* 리뷰 */
+CREATE TABLE Review (
+  Idx INT NOT NULL AUTO_INCREMENT PRIMARY KEY,     /*리뷰 번호*/
+  No INT NOT NULL, /*리뷰 상품번호*/
+  Content VARCHAR(200) NOT NULL,              /*리뷰 내용*/
+  Id VARCHAR(50) NOT NULL,                /*리뷰 작성자*/
+  Star INT NOT NULL, /* 별 */
+  Regdate TIMESTAMP NOT NULL DEFAULT NOW(),   /*리뷰 등록시간*/
+  CONSTRAINT review_no_fk FOREIGN KEY (No) REFERENCES ProductList (No) ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS QABoard;
+
+/* Q&A 게시판 */
+CREATE TABLE QABoard (
+Idx		 INT AUTO_INCREMENT PRIMARY KEY,
+Subject 		 VARCHAR(50) NOT NULL,
+Content 	 	 VARCHAR(200) NOT NULL,
+Id 			 CHAR(20) NOT NULL,
+Count 	 	  int not null default 0,
+Date	  	 TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+moDate		 datetime default null,
+cmt		   int not null default 0,  /* 코멘트에대한 카운트  */
+constraint qa_id_fk foreign key(id) references account(id) on delete cascade
+);
+
+	/* Q&A 게시판 더미*/
+    insert into QABoard(Subject,Content,Id,Count,Date) values("테스트입니다","테스트입니다",'papayaza111',0,sysdate());
+    insert into QABoard(Subject,Content,Id,Count,Date) values("테스트입니다","테스트입니다",'papayaza111',0,sysdate());
+    insert into QABoard(Subject,Content,Id,Count,Date) values("테스트입니다","테스트입니다",'papayaza111',0,sysdate());
+    insert into QABoard(Subject,Content,Id,Count,Date) values("테스트입니다","테스트입니다",'papayaza111',0,sysdate());
+    insert into QABoard(Subject,Content,Id,Count,Date) values("테스트입니다","테스트입니다",'papayaza111',0,sysdate());
+    insert into QABoard(Subject,Content,Id,Count,Date) values("테스트입니다","테스트입니다",'papayaza111',0,sysdate());
+    insert into QABoard(Subject,Content,Id,Count,Date) values("테스트입니다","테스트입니다",'papayaza111',0,sysdate());
+    insert into QABoard(Subject,Content,Id,Count,Date) values("테스트입니다","테스트입니다",'papayaza111',0,sysdate());
+    insert into QABoard(Subject,Content,Id,Count,Date) values("테스트입니다","테스트입니다",'papayaza111',0,sysdate());
+    insert into QABoard(Subject,Content,Id,Count,Date) values("테스트입니다","테스트입니다",'papayaza111',0,sysdate());
+
+
+
+/* 코멘트 게시판 */
+create table cmtboard(
+	cmtIdx int auto_increment primary key,
+    Id char(20) not null,
+    date timestamp default current_timestamp not null,
+    cmtPar int not null,
+    content varchar(200) not null,
+    constraint cb_cp_fk foreign key(cmtPar) references qaboard(idx) on delete cascade
+);
+
+
+/* 포인트 이력 */
+CREATE TABLE Point(
+Idx 		 INT AUTO_INCREMENT PRIMARY KEY,
+Id 			 CHAR(20) NOT NULL,
+IncDec		 ENUM('+','-') NOT NULL,    /*포인트 증감*/
+Point		 INT NOT NULL,	/*변동 포인트*/
+Date 		 TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+Content 		 VARCHAR(200) NOT NULL,  /*변동 내역*/
+CONSTRAINT p_id_fk FOREIGN KEY (Id ) REFERENCES Account(Id ) ON DELETE CASCADE
+);
+
+
+
+
+
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고1', '가전제품', '냉장고', '/resources/images/product/refrigerator1.jpg', '2000-03-31', 'LG전자', 1500000, 350.5,  'papayaza222', '냉장고1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고2', '가전제품', '냉장고', '/resources/images/product/refrigerator2.jpg', '2000-03-31', 'LG전자', 600000, 320.5,  'papayaza222', '냉장고2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고3', '가전제품', '냉장고', '/resources/images/product/refrigerator3.jpg', '2000-03-31', 'LG전자', 850000, 370.5,  'papayaza222', '냉장고3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고4', '가전제품', '냉장고', '/resources/images/product/refrigerator4.jpg', '2000-03-31', 'LG전자', 900000, 330.5,  'papayaza222', '냉장고4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고5', '가전제품', '냉장고', '/resources/images/product/refrigerator5.jpg', '2000-03-31', 'LG전자', 1000000, 360.5,  'papayaza222', '냉장고5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고6', '가전제품', '냉장고', '/resources/images/product/refrigerator6.jpg', '2000-03-31', 'LG전자', 120000, 350.5,  'papayaza222', '냉장고6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고7', '가전제품', '냉장고', '/resources/images/product/refrigerator7.jpg', '2000-03-31', 'LG전자', 700000, 340.5,  'papayaza222', '냉장고7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고8', '가전제품', '냉장고', '/resources/images/product/refrigerator8.jpg', '2000-03-31', 'LG전자', 770000, 390.5,  'papayaza222', '냉장고8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고9', '가전제품', '냉장고', '/resources/images/product/refrigerator9.jpg', '2000-03-31', 'LG전자', 1150000, 380.5,  'papayaza222', '냉장고9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고10', '가전제품', '냉장고', '/resources/images/product/refrigerator10.jpg', '2000-03-31', 'LG전자', 1360000, 360.5,  'papayaza222', '냉장고10입니다');
+insert into refrigerator values(1, 930, 550, '4도어냉장고', 26.5, '1등급');
+insert into refrigerator values(2, 740, 650, '3도어냉장고', 22.5, '1등급');
+insert into refrigerator values(3, 910, 550, '일반형냉장고', 25.5, '2등급');
+insert into refrigerator values(4, 680, 450, '양문형냉장고', 30.5, '2등급');
+insert into refrigerator values(5, 410, 350, '일반형냉장고', 27.5, '3등급');
+insert into refrigerator values(6, 640, 250, '양문형냉장고', 25.5, '3등급');
+insert into refrigerator values(7, 350, 450, '양문형냉장고', 23.4, '4등급');
+insert into refrigerator values(8, 670, 350, '3도어냉장고', 26.7, '4등급');
+insert into refrigerator values(9, 890, 650, '4도어냉장고', 31.7, '5등급');
+insert into refrigerator values(10, 450, 550, '일반형냉장고', 24.9, '5등급');
+
+
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('오븐_전자레인지1', '가전제품', '오븐_전자레인지', '/resources/images/product/microwave1.jpg', '2000-03-31', 'LG전자', 100000, 20.5, 'papayaza222', '오븐_전자레인지1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('오븐_전자레인지2', '가전제품', '오븐_전자레인지', '/resources/images/product/microwave2.jpg', '2000-03-31', 'LG전자', 200000, 32.6, 'papayaza222', '오븐_전자레인지2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('오븐_전자레인지3', '가전제품', '오븐_전자레인지', '/resources/images/product/microwave3.jpg', '2000-03-31', 'LG전자', 250000, 27.6, 'papayaza222', '오븐_전자레인지3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('오븐_전자레인지4', '가전제품', '오븐_전자레인지', '/resources/images/product/microwave4.jpg', '2000-03-31', 'LG전자', 400000, 29.4, 'papayaza222', '오븐_전자레인지4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('오븐_전자레인지5', '가전제품', '오븐_전자레인지', '/resources/images/product/microwave5.jpg', '2000-03-31', 'LG전자', 300000, 26.4, 'papayaza222', '오븐_전자레인지5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('오븐_전자레인지6', '가전제품', '오븐_전자레인지', '/resources/images/product/microwave6.jpg', '2000-03-31', 'LG전자', 80000, 24.9, 'papayaza222', '오븐_전자레인지6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('오븐_전자레인지7', '가전제품', '오븐_전자레인지', '/resources/images/product/microwave7.jpg', '2000-03-31', 'LG전자', 550000, 31.9, 'papayaza222', '오븐_전자레인지7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('오븐_전자레인지8', '가전제품', '오븐_전자레인지', '/resources/images/product/microwave8.jpg', '2000-03-31', 'LG전자', 170000, 28.8, 'papayaza222', '오븐_전자레인지8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('오븐_전자레인지9', '가전제품', '오븐_전자레인지', '/resources/images/product/microwave9.jpg', '2000-03-31', 'LG전자', 350000, 19.8, 'papayaza222', '오븐_전자레인지9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('오븐_전자레인지10', '가전제품', '오븐_전자레인지', '/resources/images/product/microwave10.jpg', '2000-03-31', 'LG전자', 290000, 23.4, 'papayaza222', '오븐_전자레인지10입니다');
+insert into Microwave values(11, 25, '버튼식', 700, 700);
+insert into Microwave values(12, 24, '다이얼식', 1100, 700);
+insert into Microwave values(13, 22, '버튼+다이얼식', 1050, 700); 
+insert into Microwave values(14, 21, '다이얼식', 1570, 1000);
+insert into Microwave values(15, 22, '버튼+다이얼식', 1100, 1000);
+insert into Microwave values(16, 20, '버튼식', 1570, 1000);
+insert into Microwave values(17, 25, '버튼+다이얼식', 1050, 1000);
+insert into Microwave values(18, 22, '버튼식', 700, 700);
+insert into Microwave values(19, 21, '다이얼식', 1050, 1000);
+insert into Microwave values(20, 23, '다이얼식', 1570, 1000);
+
+
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('청소기1', '가전제품', '청소기', '/resources/images/product/Cleaner1.jpg', '2000-03-31', 'LG전자', 300000, 10.5,  'papayaza222', '청소기1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('청소기2', '가전제품', '청소기', '/resources/images/product/Cleaner2.jpg', '2000-03-31', 'LG전자', 400000, 9.7,  'papayaza222', '청소기2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('청소기3', '가전제품', '청소기', '/resources/images/product/Cleaner3.jpg', '2000-03-31', 'LG전자', 500000, 15.4,  'papayaza222', '청소기3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('청소기4', '가전제품', '청소기', '/resources/images/product/Cleaner4.jpg', '2000-03-31', 'LG전자', 400000, 14.3,  'papayaza222', '청소기4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('청소기5', '가전제품', '청소기', '/resources/images/product/Cleaner5.jpg', '2000-03-31', 'LG전자', 350000, 12.4,  'papayaza222', '청소기5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('청소기6', '가전제품', '청소기', '/resources/images/product/Cleaner6.jpg', '2000-03-31', 'LG전자', 450000, 11.7,  'papayaza222', '청소기6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('청소기7', '가전제품', '청소기', '/resources/images/product/Cleaner7.jpg', '2000-03-31', 'LG전자', 250000, 13.6,  'papayaza222', '청소기7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('청소기8', '가전제품', '청소기', '/resources/images/product/Cleaner8.jpg', '2000-03-31', 'LG전자', 300000, 14.9,  'papayaza222', '청소기8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('청소기9', '가전제품', '청소기', '/resources/images/product/Cleaner9.jpg', '2000-03-31', 'LG전자', 270000, 15.4,  'papayaza222', '청소기9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('청소기10', '가전제품', '청소기', '/resources/images/product/Cleaner10.jpg', '2000-03-31', 'LG전자', 420000, 13.2,  'papayaza222', '청소기10입니다');
+insert into Cleaner values(21, '유선', null);
+insert into Cleaner values(22, '무선', 7);
+insert into Cleaner values(23, '유선', null);
+insert into Cleaner values(24, '유선', null);
+insert into Cleaner values(25, '무선', 3);
+insert into Cleaner values(26, '유선', null);
+insert into Cleaner values(27, '무선', 6);
+insert into Cleaner values(28, '무선', 2);
+insert into Cleaner values(29, '무선', 5);
+insert into Cleaner values(30, '유선', null);
+
+
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('에어컨1', '가전제품', '에어컨', '/resources/images/product/AirConditioner1.jpg', '2000-03-31', 'LG전자', 550000, 70.9, 'papayaza222', '에어컨1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('에어컨2', '가전제품', '에어컨', '/resources/images/product/AirConditioner2.jpg', '2000-03-31', 'LG전자', 600000, 94.5, 'papayaza222', '에어컨2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('에어컨3', '가전제품', '에어컨', '/resources/images/product/AirConditioner3.jpg', '2000-03-31', 'LG전자', 700000, 64.8, 'papayaza222', '에어컨3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('에어컨4', '가전제품', '에어컨', '/resources/images/product/AirConditioner4.jpg', '2000-03-31', 'LG전자', 450000, 81.3, 'papayaza222', '에어컨4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('에어컨5', '가전제품', '에어컨', '/resources/images/product/AirConditioner5.jpg', '2000-03-31', 'LG전자', 610000, 94.6, 'papayaza222', '에어컨5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('에어컨6', '가전제품', '에어컨', '/resources/images/product/AirConditioner6.jpg', '2000-03-31', 'LG전자', 590000, 45.7, 'papayaza222', '에어컨6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('에어컨7', '가전제품', '에어컨', '/resources/images/product/AirConditioner7.jpg', '2000-03-31', 'LG전자', 540000, 67.9, 'papayaza222', '에어컨7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('에어컨8', '가전제품', '에어컨', '/resources/images/product/AirConditioner8.jpg', '2000-03-31', 'LG전자', 860000, 84.6, 'papayaza222', '에어컨8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('에어컨9', '가전제품', '에어컨', '/resources/images/product/AirConditioner9.jpg', '2000-03-31', 'LG전자', 790000, 94.7, 'papayaza222', '에어컨9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('에어컨10', '가전제품', '에어컨', '/resources/images/product/AirConditioner10.jpg', '2000-03-31', 'LG전자', 430000, 87.8, 'papayaza222', '에어컨10입니다');
+insert into AirConditioner values(31, 22.8, 7.5, '불가능', '가능', '가능', '복합형');
+insert into AirConditioner values(32, 52.8, 8.2, '가능', '불가능', '가능', '스탠드형');
+insert into AirConditioner values(33, 32.5, 8.0, '가능', '가능', '가능', '벽걸이형');
+insert into AirConditioner values(34, 22.8, 7.7, '가능', '불가능', '가능', '스탠드형');
+insert into AirConditioner values(35, 48.8, 7.9, '가능', '가능', '가능', '복합형');
+insert into AirConditioner values(36, 48.8, 8.2, '가능', '불가능', '불가능', '복합형');
+insert into AirConditioner values(37, 65.9, 7.5, '가능', '가능', '불가능', '스탠드형');
+insert into AirConditioner values(38, 22.8, 7.5, '불가능', '가능', '가능', '복합형');
+insert into AirConditioner values(39, 22.8, 8.0, '가능', '가능', '가능', '복합형');
+insert into AirConditioner values(40, 22.8, 7.7, '가능', '가능', '가능', '벽걸이형');
+
+
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('세탁기1', '가전제품', '세탁기', '/resources/images/product/Washer1.jpg', '2000-03-31', 'LG전자', 780000, 56.4, 'papayaza222', '세탁기1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('세탁기2', '가전제품', '세탁기', '/resources/images/product/Washer2.jpg', '2000-03-31', 'LG전자', 940000, 76.4, 'papayaza222', '세탁기2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('세탁기3', '가전제품', '세탁기', '/resources/images/product/Washer3.jpg', '2000-03-31', 'LG전자', 680000, 68.4, 'papayaza222', '세탁기3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('세탁기4', '가전제품', '세탁기', '/resources/images/product/Washer4.jpg', '2000-03-31', 'LG전자', 490000, 64.5, 'papayaza222', '세탁기4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('세탁기5', '가전제품', '세탁기', '/resources/images/product/Washer5.jpg', '2000-03-31', 'LG전자', 790000, 97.8, 'papayaza222', '세탁기5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('세탁기6', '가전제품', '세탁기', '/resources/images/product/Washer6.jpg', '2000-03-31', 'LG전자', 810000, 84.6, 'papayaza222', '세탁기6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('세탁기7', '가전제품', '세탁기', '/resources/images/product/Washer7.jpg', '2000-03-31', 'LG전자', 960000, 76.4, 'papayaza222', '세탁기7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('세탁기8', '가전제품', '세탁기', '/resources/images/product/Washer8.jpg', '2000-03-31', 'LG전자', 830000, 86.4, 'papayaza222', '세탁기8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('세탁기9', '가전제품', '세탁기', '/resources/images/product/Washer9.jpg', '2000-03-31', 'LG전자', 780000, 67.9, 'papayaza222', '세탁기9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('세탁기10', '가전제품', '세탁기', '/resources/images/product/Washer10.jpg', '2000-03-31', 'LG전자', 690000, 89.2, 'papayaza222', '세탁기10입니다');
+insert into Washer values(41, 14, '1등급', '통돌이');
+insert into Washer values(42, 19, '1등급', '통돌이');
+insert into Washer values(43, 17, '3등급', '공기방울');
+insert into Washer values(44, 14, '3등급', '공기방울');
+insert into Washer values(45, 17, '2등급', '세탁전용');
+insert into Washer values(46, 16, '1등급', '세탁전용');
+insert into Washer values(47, 16, '4등급', '통돌이');
+insert into Washer values(48, 19, '2등급', '공기방울');
+insert into Washer values(49, 16, '5등급', '통돌이');
+insert into Washer values(50, 14, '4등급', '세탁전용');
+
+
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('공기청정기1', '가전제품', '공기청정기', '/resources/images/product/AirPurifier1.jpg', '2000-03-31', 'LG전자', 430000, 19.8, 'papayaza222', '공기청정기1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('공기청정기2', '가전제품', '공기청정기', '/resources/images/product/AirPurifier2.jpg', '2000-03-31', 'LG전자', 380000, 17.6, 'papayaza222', '공기청정기2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('공기청정기3', '가전제품', '공기청정기', '/resources/images/product/AirPurifier3.jpg', '2000-03-31', 'LG전자', 320000, 21.6, 'papayaza222', '공기청정기3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('공기청정기4', '가전제품', '공기청정기', '/resources/images/product/AirPurifier4.jpg', '2000-03-31', 'LG전자', 290000, 23.4, 'papayaza222', '공기청정기4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('공기청정기5', '가전제품', '공기청정기', '/resources/images/product/AirPurifier5.jpg', '2000-03-31', 'LG전자', 270000, 23.9, 'papayaza222', '공기청정기5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('공기청정기6', '가전제품', '공기청정기', '/resources/images/product/AirPurifier6.jpg', '2000-03-31', 'LG전자', 460000, 19.4, 'papayaza222', '공기청정기6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('공기청정기7', '가전제품', '공기청정기', '/resources/images/product/AirPurifier7.jpg', '2000-03-31', 'LG전자', 330000, 21.2, 'papayaza222', '공기청정기7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('공기청정기8', '가전제품', '공기청정기', '/resources/images/product/AirPurifier8.jpg', '2000-03-31', 'LG전자', 240000, 20.9, 'papayaza222', '공기청정기8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('공기청정기9', '가전제품', '공기청정기', '/resources/images/product/AirPurifier9.jpg', '2000-03-31', 'LG전자', 340000, 17.9, 'papayaza222', '공기청정기9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('공기청정기10', '가전제품', '공기청정기', '/resources/images/product/AirPurifier10.jpg', '2000-03-31', 'LG전자', 390000, 22.6, 'papayaza222', '공기청정기10입니다');
+insert into AirPurifier values(51, '필터식청정', 17, '헤파필터', 5);
+insert into AirPurifier values(52, '복합식청정', 33, '필터', 50);
+insert into AirPurifier values(53, '필터식청정', 50, '필터', 550);
+insert into AirPurifier values(54, '복합식청정', 50, '헤파필터', 100);
+insert into AirPurifier values(55, '필터식청정', 66, '필터', 250);
+insert into AirPurifier values(56, '음이온식청정', 99, '헤파필터', 700);
+insert into AirPurifier values(57, '음이온식청정', 66, '필터', 750);
+insert into AirPurifier values(58, '산림욕식청정', 17, '헤파필터', 220);
+insert into AirPurifier values(59, '필터식청정', 33, '헤파필터', 350);
+insert into AirPurifier values(60, '산림욕식청정', 17, '필터', 500);
+
+
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('노트북1', 'IT', '노트북', '/resources/images/product/Notebook1.jpg', '2000-03-31', 'LG전자', 500000, 3.2, 'papayaza222', '노트북1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('노트북2', 'IT', '노트북', '/resources/images/product/Notebook2.jpg', '2000-03-31', 'LG전자', 700000, 1.6, 'papayaza222', '노트북2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('노트북3', 'IT', '노트북', '/resources/images/product/Notebook3.jpg', '2000-03-31', 'LG전자', 610000, 2.9, 'papayaza222', '노트북3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('노트북4', 'IT', '노트북', '/resources/images/product/Notebook4.jpg', '2000-03-31', 'LG전자', 390000, 4.5, 'papayaza222', '노트북4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('노트북5', 'IT', '노트북', '/resources/images/product/Notebook5.jpg', '2000-03-31', 'LG전자', 460000, 3.4, 'papayaza222', '노트북5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('노트북6', 'IT', '노트북', '/resources/images/product/Notebook6.jpg', '2000-03-31', 'LG전자', 640000, 3.9, 'papayaza222', '노트북6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('노트북7', 'IT', '노트북', '/resources/images/product/Notebook7.jpg', '2000-03-31', 'LG전자', 370000, 4.7, 'papayaza222', '노트북7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('노트북8', 'IT', '노트북', '/resources/images/product/Notebook8.jpg', '2000-03-31', 'LG전자', 490000, 3.3, 'papayaza222', '노트북8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('노트북9', 'IT', '노트북', '/resources/images/product/Notebook9.jpg', '2000-03-31', 'LG전자', 560000, 2.2, 'papayaza222', '노트북9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('노트북10', 'IT', '노트북', '/resources/images/product/Notebook10.jpg', '2000-03-31', 'LG전자', 520000, 1.9, 'papayaza222', '노트북10입니다');
+insert into Notebook values(61, 'Intel', '라이젠3', '2(듀얼)', 'HDD', 250, 11.6, '1600X1200');
+insert into Notebook values(62, 'AMD', 'I3', '4(쿼드)', 'SSD', 300, 15.6, '1600X1050');
+insert into Notebook values(63, 'Intel', 'I7', '6(헥사)', 'SSD', 124, 11.6, '1360X768');
+insert into Notebook values(64, 'AMD', '셀러론', '4(쿼드)', 'HDD', 256, 15.6, '1440X900');
+insert into Notebook values(65, 'Intel', '라이젠3', '6(헥사)', 'SSD', 250, 12.8, '1600X900');
+insert into Notebook values(66, 'Intel', 'I3', '4(쿼드)', 'HDD', 500, 15.6, '1920X1200');
+insert into Notebook values(67, 'AMD', '라이젠5', '8(옥타)', 'SSD', 350, 15.6, '1680X1050');
+insert into Notebook values(68, 'Intel', '라이젠3', '8(옥타)', 'SSD', 320, 15.6, '1600X1200');
+insert into Notebook values(69, 'AMD', 'I5', '4(쿼드)', 'HDD', 250, 15.6, '2560X1600');
+insert into Notebook values(70, 'Intel', '라이젠7', '2(듀얼)', 'HDD', 280, 15.6, '5120X2880');
+
+
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('데스크탑1', 'IT', '데스크탑', '/resources/images/product/desktop1.jpg', '2000-03-31', 'LG전자', 840000, 20.3, 'papayaza222', '데스크탑1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('데스크탑2', 'IT', '데스크탑', '/resources/images/product/desktop2.jpg', '2000-03-31', 'LG전자', 790000, 25.4, 'papayaza222', '데스크탑2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('데스크탑3', 'IT', '데스크탑', '/resources/images/product/desktop3.jpg', '2000-03-31', 'LG전자', 820000, 19.7, 'papayaza222', '데스크탑3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('데스크탑4', 'IT', '데스크탑', '/resources/images/product/desktop4.jpg', '2000-03-31', 'LG전자', 640000, 22.2, 'papayaza222', '데스크탑4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('데스크탑5', 'IT', '데스크탑', '/resources/images/product/desktop5.jpg', '2000-03-31', 'LG전자', 590000, 23.7, 'papayaza222', '데스크탑5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('데스크탑6', 'IT', '데스크탑', '/resources/images/product/desktop6.jpg', '2000-03-31', 'LG전자', 680000, 14.6, 'papayaza222', '데스크탑6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('데스크탑7', 'IT', '데스크탑', '/resources/images/product/desktop7.jpg', '2000-03-31', 'LG전자', 730000, 27.6, 'papayaza222', '데스크탑7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('데스크탑8', 'IT', '데스크탑', '/resources/images/product/desktop8.jpg', '2000-03-31', 'LG전자', 610000, 24.6, 'papayaza222', '데스크탑8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('데스크탑9', 'IT', '데스크탑', '/resources/images/product/desktop9.jpg', '2000-03-31', 'LG전자', 920000, 23.4, 'papayaza222', '데스크탑9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('데스크탑10', 'IT', '데스크탑', '/resources/images/product/desktop10.jpg', '2000-03-31', 'LG전자', 790000, 21.9, 'papayaza222', '데스크탑10입니다');
+insert into desktop values(71, 'AllInOne', 'Intel', '셀러론', '2(듀얼)', 'SSD', 512, 26.5, '1600X1200');
+insert into desktop values(72, 'WorkStation', 'Intel', 'I3', '6(헥사)', 'HDD', 256, 35.6, '1280X800');
+insert into desktop values(73, 'AllInOne', 'AMD', 'I7', '4(쿼드)', 'SSD', 300, 45.7, '1600X1050');
+insert into desktop values(74, 'BareBones', 'Intel', '라이젠5', '2(듀얼)', 'SSD', 800, 55.5, '1280X1024');
+insert into desktop values(75, 'WorkStation', 'AMD', 'I5', '6(헥사)', 'HDD', 650, 35.6, '1360X768');
+insert into desktop values(76, 'AllInOne', 'AMD', 'I3', '8(옥타)', 'HDD', 300, 14.7, '1920X1200');
+insert into desktop values(77, 'BareBones', 'AMD', '라이젠7', '4(쿼드)', 'SSD', 128, 33.3, '3440X1440');
+insert into desktop values(78, 'WorkStation', 'Intel', '셀러론', '2(듀얼)', 'HDD', 128, 44.4, '3840X1600');
+insert into desktop values(79, 'AllInOne', 'AMD', '라이젠3', '2(듀얼)', 'SSD', 600, 64.9, '4096X2160');
+insert into desktop values(80, 'BareBones', 'Intel', 'I7', '8(옥타)', 'HDD', 777, 51.3, '5120X2880');
+
+
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모니터1', 'IT', '모니터', '/resources/images/product/monitor1.jpg', '2000-03-31', 'LG전자', 290000, 7.9, 'papayaza222', '모니터1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모니터2', 'IT', '모니터', '/resources/images/product/monitor2.jpg', '2000-03-31', 'LG전자', 370000, 9.3, 'papayaza222', '모니터2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모니터3', 'IT', '모니터', '/resources/images/product/monitor3.jpg', '2000-03-31', 'LG전자', 410000, 8.1, 'papayaza222', '모니터3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모니터4', 'IT', '모니터', '/resources/images/product/monitor4.jpg', '2000-03-31', 'LG전자', 530000, 6.9, 'papayaza222', '모니터4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모니터5', 'IT', '모니터', '/resources/images/product/monitor5.jpg', '2000-03-31', 'LG전자', 270000, 7.3, 'papayaza222', '모니터5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모니터6', 'IT', '모니터', '/resources/images/product/monitor6.jpg', '2000-03-31', 'LG전자', 320000, 8.4, 'papayaza222', '모니터6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모니터7', 'IT', '모니터', '/resources/images/product/monitor7.jpg', '2000-03-31', 'LG전자', 430000, 6.9, 'papayaza222', '모니터7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모니터8', 'IT', '모니터', '/resources/images/product/monitor8.jpg', '2000-03-31', 'LG전자', 360000, 10.9, 'papayaza222', '모니터8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모니터9', 'IT', '모니터', '/resources/images/product/monitor9.jpg', '2000-03-31', 'LG전자', 290000, 9.1, 'papayaza222', '모니터9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모니터10', 'IT', '모니터', '/resources/images/product/monitor10.jpg', '2000-03-31', 'LG전자', 330000, 7.8, 'papayaza222', '모니터10입니다');
+insert into monitor values(81, 70.5, '21:9', '2560X1440');
+insert into monitor values(82, 100.9, '16:10', '3440X1440');
+insert into monitor values(83, 87.6, '4:3', '1680X1050');
+insert into monitor values(84, 94.1, '16:9', '1200X800');
+insert into monitor values(85, 79.5, '21:9', '1024X768');
+insert into monitor values(86, 82.2, '16:10', '1600X1050');
+insert into monitor values(87, 74.6, '4:3', '1920X1920');
+insert into monitor values(88, 98.8, '16:9', '3840X1080');
+insert into monitor values(89, 81.1, '16:9', '3840X2160');
+insert into monitor values(90, 79.7, '21:9', '4096X2160');
+
+
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('프린터1', 'IT', '프린터', '/resources/images/product/printer1.jpg', '2000-03-31', 'LG전자', 540000, 8.7, 'papayaza222', '프린터1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('프린터2', 'IT', '프린터', '/resources/images/product/printer2.jpg', '2000-03-31', 'LG전자', 390000, 9.8, 'papayaza222', '프린터2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('프린터3', 'IT', '프린터', '/resources/images/product/printer3.jpg', '2000-03-31', 'LG전자', 400000, 7.6, 'papayaza222', '프린터3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('프린터4', 'IT', '프린터', '/resources/images/product/printer4.jpg', '2000-03-31', 'LG전자', 310000, 6.8, 'papayaza222', '프린터4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('프린터5', 'IT', '프린터', '/resources/images/product/printer5.jpg', '2000-03-31', 'LG전자', 270000, 7.1, 'papayaza222', '프린터5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('프린터6', 'IT', '프린터', '/resources/images/product/printer6.jpg', '2000-03-31', 'LG전자', 380000, 8.3, 'papayaza222', '프린터6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('프린터7', 'IT', '프린터', '/resources/images/product/printer7.jpg', '2000-03-31', 'LG전자', 440000, 7.4, 'papayaza222', '프린터7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('프린터8', 'IT', '프린터', '/resources/images/product/printer8.jpg', '2000-03-31', 'LG전자', 350000, 9.5, 'papayaza222', '프린터8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('프린터9', 'IT', '프린터', '/resources/images/product/printer9.jpg', '2000-03-31', 'LG전자', 380000, 8.3, 'papayaza222', '프린터9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('프린터10', 'IT', '프린터', '/resources/images/product/printer10.jpg', '2000-03-31', 'LG전자', 290000, 7.6, 'papayaza222', '프린터10입니다');
+insert into printer values(91, '잉크젯', '흑백', 28, '2400X600', '가능', '불가능', '불가능');
+insert into printer values(92, '레이저', '흑백', 38, '1200X1200', '불가능', '가능', '불가능');
+insert into printer values(93, '레이저', '컬러', 26, '5760X1440', '가능', '불가능', '가능');
+insert into printer values(94, '잉크젯', '컬러', 15, '9600X600', '불가능', '가능', '가능');
+insert into printer values(95, '레이저', '컬러', 22, '1200X1200', '가능', '불가능', '불가능');
+insert into printer values(96, '잉크젯', '흑백', 33, '2400X600', '가능', '가능', '가능');
+insert into printer values(97, '잉크젯', '흑백', 17, '9600X600', '불가능', '가능', '불가능');
+insert into printer values(98, '레이저', '컬러', 37, '4800X1200', '가능', '불가능', '가능');
+insert into printer values(99, '잉크젯', '컬러', 29, '5760X1440', '불가능', '가능', '가능');
+insert into printer values(100, '레이저', '흑백', 25, '4800X1200', '가능', '불가능', '불가능');
+
+
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('스마트폰1', '모바일', '스마트폰', '/resources/images/product/smartphone1.jpg', '2000-03-31', 'LG전자', 700000, 1.5, 'papayaza222', '스마트폰1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('스마트폰2', '모바일', '스마트폰', '/resources/images/product/smartphone2.jpg', '2000-03-31', 'LG전자', 550000, 0.9, 'papayaza222', '스마트폰2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('스마트폰3', '모바일', '스마트폰', '/resources/images/product/smartphone3.jpg', '2000-03-31', 'LG전자', 650000, 1.1, 'papayaza222', '스마트폰3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('스마트폰4', '모바일', '스마트폰', '/resources/images/product/smartphone4.jpg', '2000-03-31', 'LG전자', 620000, 1.3, 'papayaza222', '스마트폰4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('스마트폰5', '모바일', '스마트폰', '/resources/images/product/smartphone5.jpg', '2000-03-31', 'LG전자', 730000, 0.8, 'papayaza222', '스마트폰5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('스마트폰6', '모바일', '스마트폰', '/resources/images/product/smartphone6.jpg', '2000-03-31', 'LG전자', 640000, 1.2, 'papayaza222', '스마트폰6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('스마트폰7', '모바일', '스마트폰', '/resources/images/product/smartphone7.jpg', '2000-03-31', 'LG전자', 590000, 1.4, 'papayaza222', '스마트폰7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('스마트폰8', '모바일', '스마트폰', '/resources/images/product/smartphone8.jpg', '2000-03-31', 'LG전자', 710000, 0.9, 'papayaza222', '스마트폰8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('스마트폰9', '모바일', '스마트폰', '/resources/images/product/smartphone9.jpg', '2000-03-31', 'LG전자', 680000, 1.6, 'papayaza222', '스마트폰9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('스마트폰10', '모바일', '스마트폰', '/resources/images/product/smartphone10.jpg', '2000-03-31', 'LG전자', 740000, 2.2, 'papayaza222', '스마트폰10입니다');
+insert into  smartphone values(101, '갤럭시노트', 'Android', 2500, 'Amoled', 5.8);
+insert into  smartphone values(102, '갤럭시S', 'iOS', 1500, 'LCD', 3.5);
+insert into  smartphone values(103, '갤럭시A/J', 'iOS', 1900, 'LCD', 4.9);
+insert into  smartphone values(104, '아이폰', 'Android', 2800, 'LCD', 6.7);
+insert into  smartphone values(105, '갤럭시A/J', 'Android', 3500, 'Amoled', 6.2);
+insert into  smartphone values(106, 'LG 시리즈', 'iOS', 3300, 'Amoled', 5.6);
+insert into  smartphone values(107, '갤럭시S', 'Android', 3700, 'LCD', 6.9);
+insert into  smartphone values(108, 'LG 시리즈', 'iOS', 3900, 'Amoled', 4.8);
+insert into  smartphone values(109, '아이폰', 'Android', 2600, 'LCD', 5.1);
+insert into  smartphone values(110, '갤럭시노트', 'iOS', 2200, 'Amoled', 5.5);
+
+
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('태블릿1', '모바일', '태블릿', '/resources/images/product/tablet1.jpg', '2000-03-31', 'LG전자', 550000, 2.3, 'papayaza222', '태블릿1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('태블릿2', '모바일', '태블릿', '/resources/images/product/tablet2.jpg', '2000-03-31', 'LG전자', 480000, 1.9, 'papayaza222', '태블릿2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('태블릿3', '모바일', '태블릿', '/resources/images/product/tablet3.jpg', '2000-03-31', 'LG전자', 390000, 1.7, 'papayaza222', '태블릿3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('태블릿4', '모바일', '태블릿', '/resources/images/product/tablet4.jpg', '2000-03-31', 'LG전자', 460000, 2.1, 'papayaza222', '태블릿4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('태블릿5', '모바일', '태블릿', '/resources/images/product/tablet5.jpg', '2000-03-31', 'LG전자', 370000, 1.9, 'papayaza222', '태블릿5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('태블릿6', '모바일', '태블릿', '/resources/images/product/tablet6.jpg', '2000-03-31', 'LG전자', 520000, 1.8, 'papayaza222', '태블릿6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('태블릿7', '모바일', '태블릿', '/resources/images/product/tablet7.jpg', '2000-03-31', 'LG전자', 410000, 1.6, 'papayaza222', '태블릿7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('태블릿8', '모바일', '태블릿', '/resources/images/product/tablet8.jpg', '2000-03-31', 'LG전자', 510000, 2.4, 'papayaza222', '태블릿8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('태블릿9', '모바일', '태블릿', '/resources/images/product/tablet9.jpg', '2000-03-31', 'LG전자', 440000, 2.5, 'papayaza222', '태블릿9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('태블릿10', '모바일', '태블릿', '/resources/images/product/tablet10.jpg', '2000-03-31', 'LG전자', 330000, 2.2, 'papayaza222', '태블릿10입니다');
+insert into tablet values(111, '삼성전자', 'Window', 5500, 'LCD', 11.5);
+insert into tablet values(112, 'APPLE', 'Android', 3800, 'Amoled', 10.6);
+insert into tablet values(113, '레노버', 'iOS', 7500, 'Amoled', 13.5);
+insert into tablet values(114, 'LG전자', 'Android', 6000, 'LCD', 6.9);
+insert into tablet values(115, 'Microsoft', 'iOS', 4900, 'LCD', 8.4);
+insert into tablet values(116, '레노버', 'Window', 7800, 'Amoled', 9.7);
+insert into tablet values(117, '삼성전자', 'Window', 2400, 'LCD', 10.1);
+insert into tablet values(118, 'LG전자', 'iOS', 5900, 'LCD', 12.6);
+insert into tablet values(119, 'APPLE', 'Android', 6600, 'Amoled', 7.7);
+insert into tablet values(120, 'Microsoft', 'Window', 7700, 'LCD', 8.8);
+
+
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('PC 액세서리1', '액세서리', 'PC 액세서리', '/resources/images/product/Acc1.jpg', '2000-03-31', 'LG전자', 5000, 0.1, 'papayaza222', 'PC 액세서리1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('PC 액세서리2', '액세서리', 'PC 액세서리', '/resources/images/product/Acc2.jpg', '2000-03-31', 'LG전자', 7000, 0.1, 'papayaza222', 'PC 액세서리2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('PC 액세서리3', '액세서리', 'PC 액세서리', '/resources/images/product/Acc3.jpg', '2000-03-31', 'LG전자', 15000, 0.1, 'papayaza222', 'PC 액세서리3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('PC 액세서리4', '액세서리', 'PC 액세서리', '/resources/images/product/Acc4.jpg', '2000-03-31', 'LG전자', 23000, 0.1, 'papayaza222', 'PC 액세서리4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('PC 액세서리5', '액세서리', 'PC 액세서리', '/resources/images/product/Acc5.jpg', '2000-03-31', 'LG전자', 25000, 0.1, 'papayaza222', 'PC 액세서리5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('PC 액세서리6', '액세서리', 'PC 액세서리', '/resources/images/product/Acc6.jpg', '2000-03-31', 'LG전자', 19000, 0.1, 'papayaza222', 'PC 액세서리6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('PC 액세서리7', '액세서리', 'PC 액세서리', '/resources/images/product/Acc7.jpg', '2000-03-31', 'LG전자', 27000, 0.1, 'papayaza222', 'PC 액세서리7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('PC 액세서리8', '액세서리', 'PC 액세서리', '/resources/images/product/Acc8.jpg', '2000-03-31', 'LG전자', 13000, 0.1, 'papayaza222', 'PC 액세서리8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('PC 액세서리9', '액세서리', 'PC 액세서리', '/resources/images/product/Acc9.jpg', '2000-03-31', 'LG전자', 16000, 0.1, 'papayaza222', 'PC 액세서리9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('PC 액세서리10', '액세서리', 'PC 액세서리', '/resources/images/product/Acc10.jpg', '2000-03-31', 'LG전자', 30000, 0.1, 'papayaza222', 'PC 액세서리10입니다');
+
+
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모바일 액세서리1', '액세서리', '모바일 액세서리', '/resources/images/product/mobileAcc1.jpg', '2000-03-31', 'LG전자', 11000, 0.1, 'papayaza222', '모바일 액세서리1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모바일 액세서리2', '액세서리', '모바일 액세서리', '/resources/images/product/mobileAcc2.jpg', '2000-03-31', 'LG전자', 8000, 0.1, 'papayaza222', '모바일 액세서리2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모바일 액세서리3', '액세서리', '모바일 액세서리', '/resources/images/product/mobileAcc3.jpg', '2000-03-31', 'LG전자', 9000, 0.1, 'papayaza222', '모바일 액세서리3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모바일 액세서리4', '액세서리', '모바일 액세서리', '/resources/images/product/mobileAcc4.jpg', '2000-03-31', 'LG전자', 6000, 0.1, 'papayaza222', '모바일 액세서리4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모바일 액세서리5', '액세서리', '모바일 액세서리', '/resources/images/product/mobileAcc5.jpg', '2000-03-31', 'LG전자', 13000, 0.1, 'papayaza222', '모바일 액세서리5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모바일 액세서리6', '액세서리', '모바일 액세서리', '/resources/images/product/mobileAcc6.jpg', '2000-03-31', 'LG전자', 17000, 0.1, 'papayaza222', '모바일 액세서리6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모바일 액세서리7', '액세서리', '모바일 액세서리', '/resources/images/product/mobileAcc7.jpg', '2000-03-31', 'LG전자', 12000, 0.1, 'papayaza222', '모바일 액세서리7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모바일 액세서리8', '액세서리', '모바일 액세서리', '/resources/images/product/mobileAcc8.jpg', '2000-03-31', 'LG전자', 8000, 0.1, 'papayaza222', '모바일 액세서리8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모바일 액세서리9', '액세서리', '모바일 액세서리', '/resources/images/product/mobileAcc9.jpg', '2000-03-31', 'LG전자', 20000, 0.1, 'papayaza222', '모바일 액세서리9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('모바일 액세서리10', '액세서리', '모바일 액세서리', '/resources/images/product/mobileAcc10.jpg', '2000-03-31', 'LG전자', 10000, 0.1, 'papayaza222', '모바일 액세서리10입니다');
+
+
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고11', '가전제품', '냉장고', '/resources/images/product/refrigerator1.jpg', '2000-03-31', 'LG전자', 1500000, 350.5,  'papayaza222', '냉장고1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고12', '가전제품', '냉장고', '/resources/images/product/refrigerator2.jpg', '2000-03-31', 'LG전자', 600000, 320.5,  'papayaza222', '냉장고2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고13', '가전제품', '냉장고', '/resources/images/product/refrigerator3.jpg', '2000-03-31', 'LG전자', 850000, 370.5,  'papayaza222', '냉장고3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고14', '가전제품', '냉장고', '/resources/images/product/refrigerator4.jpg', '2000-03-31', 'LG전자', 900000, 330.5,  'papayaza222', '냉장고4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고15', '가전제품', '냉장고', '/resources/images/product/refrigerator5.jpg', '2000-03-31', 'LG전자', 1000000, 360.5,  'papayaza222', '냉장고5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고16', '가전제품', '냉장고', '/resources/images/product/refrigerator6.jpg', '2000-03-31', 'LG전자', 120000, 350.5,  'papayaza222', '냉장고6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고17', '가전제품', '냉장고', '/resources/images/product/refrigerator7.jpg', '2000-03-31', 'LG전자', 700000, 340.5,  'papayaza222', '냉장고7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고18', '가전제품', '냉장고', '/resources/images/product/refrigerator8.jpg', '2000-03-31', 'LG전자', 770000, 390.5,  'papayaza222', '냉장고8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고19', '가전제품', '냉장고', '/resources/images/product/refrigerator9.jpg', '2000-03-31', 'LG전자', 1150000, 380.5,  'papayaza222', '냉장고9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고20', '가전제품', '냉장고', '/resources/images/product/refrigerator10.jpg', '2000-03-31', 'LG전자', 1360000, 360.5,  'papayaza222', '냉장고10입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고21', '가전제품', '냉장고', '/resources/images/product/refrigerator1.jpg', '2000-03-31', 'LG전자', 1500000, 350.5,  'papayaza222', '냉장고1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고22', '가전제품', '냉장고', '/resources/images/product/refrigerator2.jpg', '2000-03-31', 'LG전자', 600000, 320.5,  'papayaza222', '냉장고2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고23', '가전제품', '냉장고', '/resources/images/product/refrigerator3.jpg', '2000-03-31', 'LG전자', 850000, 370.5,  'papayaza222', '냉장고3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고24', '가전제품', '냉장고', '/resources/images/product/refrigerator4.jpg', '2000-03-31', 'LG전자', 900000, 330.5,  'papayaza222', '냉장고4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고25', '가전제품', '냉장고', '/resources/images/product/refrigerator5.jpg', '2000-03-31', 'LG전자', 1000000, 360.5,  'papayaza222', '냉장고5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고26', '가전제품', '냉장고', '/resources/images/product/refrigerator6.jpg', '2000-03-31', 'LG전자', 120000, 350.5,  'papayaza222', '냉장고6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고27', '가전제품', '냉장고', '/resources/images/product/refrigerator7.jpg', '2000-03-31', 'LG전자', 700000, 340.5,  'papayaza222', '냉장고7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고28', '가전제품', '냉장고', '/resources/images/product/refrigerator8.jpg', '2000-03-31', 'LG전자', 770000, 390.5,  'papayaza222', '냉장고8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고29', '가전제품', '냉장고', '/resources/images/product/refrigerator9.jpg', '2000-03-31', 'LG전자', 1150000, 380.5,  'papayaza222', '냉장고9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고30', '가전제품', '냉장고', '/resources/images/product/refrigerator10.jpg', '2000-03-31', 'LG전자', 1360000, 360.5,  'papayaza222', '냉장고10입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고31', '가전제품', '냉장고', '/resources/images/product/refrigerator1.jpg', '2000-03-31', 'LG전자', 1500000, 350.5,  'papayaza222', '냉장고1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고32', '가전제품', '냉장고', '/resources/images/product/refrigerator2.jpg', '2000-03-31', 'LG전자', 600000, 320.5,  'papayaza222', '냉장고2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고33', '가전제품', '냉장고', '/resources/images/product/refrigerator3.jpg', '2000-03-31', 'LG전자', 850000, 370.5,  'papayaza222', '냉장고3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고34', '가전제품', '냉장고', '/resources/images/product/refrigerator4.jpg', '2000-03-31', 'LG전자', 900000, 330.5,  'papayaza222', '냉장고4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고35', '가전제품', '냉장고', '/resources/images/product/refrigerator5.jpg', '2000-03-31', 'LG전자', 1000000, 360.5,  'papayaza222', '냉장고5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고36', '가전제품', '냉장고', '/resources/images/product/refrigerator6.jpg', '2000-03-31', 'LG전자', 120000, 350.5,  'papayaza222', '냉장고6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고37', '가전제품', '냉장고', '/resources/images/product/refrigerator7.jpg', '2000-03-31', 'LG전자', 700000, 340.5,  'papayaza222', '냉장고7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고38', '가전제품', '냉장고', '/resources/images/product/refrigerator8.jpg', '2000-03-31', 'LG전자', 770000, 390.5,  'papayaza222', '냉장고8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고39', '가전제품', '냉장고', '/resources/images/product/refrigerator9.jpg', '2000-03-31', 'LG전자', 1150000, 380.5,  'papayaza222', '냉장고9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고40', '가전제품', '냉장고', '/resources/images/product/refrigerator10.jpg', '2000-03-31', 'LG전자', 1360000, 360.5,  'papayaza222', '냉장고10입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고41', '가전제품', '냉장고', '/resources/images/product/refrigerator1.jpg', '2000-03-31', 'LG전자', 1500000, 350.5,  'papayaza222', '냉장고1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고42', '가전제품', '냉장고', '/resources/images/product/refrigerator2.jpg', '2000-03-31', 'LG전자', 600000, 320.5,  'papayaza222', '냉장고2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고43', '가전제품', '냉장고', '/resources/images/product/refrigerator3.jpg', '2000-03-31', 'LG전자', 850000, 370.5,  'papayaza222', '냉장고3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고44', '가전제품', '냉장고', '/resources/images/product/refrigerator4.jpg', '2000-03-31', 'LG전자', 900000, 330.5,  'papayaza222', '냉장고4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고45', '가전제품', '냉장고', '/resources/images/product/refrigerator5.jpg', '2000-03-31', 'LG전자', 1000000, 360.5,  'papayaza222', '냉장고5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고46', '가전제품', '냉장고', '/resources/images/product/refrigerator6.jpg', '2000-03-31', 'LG전자', 120000, 350.5,  'papayaza222', '냉장고6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고47', '가전제품', '냉장고', '/resources/images/product/refrigerator7.jpg', '2000-03-31', 'LG전자', 700000, 340.5,  'papayaza222', '냉장고7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고48', '가전제품', '냉장고', '/resources/images/product/refrigerator8.jpg', '2000-03-31', 'LG전자', 770000, 390.5,  'papayaza222', '냉장고8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고49', '가전제품', '냉장고', '/resources/images/product/refrigerator9.jpg', '2000-03-31', 'LG전자', 1150000, 380.5,  'papayaza222', '냉장고9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고50', '가전제품', '냉장고', '/resources/images/product/refrigerator10.jpg', '2000-03-31', 'LG전자', 1360000, 360.5,  'papayaza222', '냉장고10입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고51', '가전제품', '냉장고', '/resources/images/product/refrigerator1.jpg', '2000-03-31', 'LG전자', 1500000, 350.5,  'papayaza222', '냉장고1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고52', '가전제품', '냉장고', '/resources/images/product/refrigerator2.jpg', '2000-03-31', 'LG전자', 600000, 320.5,  'papayaza222', '냉장고2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고53', '가전제품', '냉장고', '/resources/images/product/refrigerator3.jpg', '2000-03-31', 'LG전자', 850000, 370.5,  'papayaza222', '냉장고3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고54', '가전제품', '냉장고', '/resources/images/product/refrigerator4.jpg', '2000-03-31', 'LG전자', 900000, 330.5,  'papayaza222', '냉장고4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고55', '가전제품', '냉장고', '/resources/images/product/refrigerator5.jpg', '2000-03-31', 'LG전자', 1000000, 360.5,  'papayaza222', '냉장고5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고56', '가전제품', '냉장고', '/resources/images/product/refrigerator6.jpg', '2000-03-31', 'LG전자', 120000, 350.5,  'papayaza222', '냉장고6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고57', '가전제품', '냉장고', '/resources/images/product/refrigerator7.jpg', '2000-03-31', 'LG전자', 700000, 340.5,  'papayaza222', '냉장고7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고58', '가전제품', '냉장고', '/resources/images/product/refrigerator8.jpg', '2000-03-31', 'LG전자', 770000, 390.5,  'papayaza222', '냉장고8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고59', '가전제품', '냉장고', '/resources/images/product/refrigerator9.jpg', '2000-03-31', 'LG전자', 1150000, 380.5,  'papayaza222', '냉장고9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고60', '가전제품', '냉장고', '/resources/images/product/refrigerator10.jpg', '2000-03-31', 'LG전자', 1360000, 360.5,  'papayaza222', '냉장고10입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고61', '가전제품', '냉장고', '/resources/images/product/refrigerator1.jpg', '2000-03-31', 'LG전자', 1500000, 350.5,  'papayaza222', '냉장고1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고62', '가전제품', '냉장고', '/resources/images/product/refrigerator2.jpg', '2000-03-31', 'LG전자', 600000, 320.5,  'papayaza222', '냉장고2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고63', '가전제품', '냉장고', '/resources/images/product/refrigerator3.jpg', '2000-03-31', 'LG전자', 850000, 370.5,  'papayaza222', '냉장고3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고64', '가전제품', '냉장고', '/resources/images/product/refrigerator4.jpg', '2000-03-31', 'LG전자', 900000, 330.5,  'papayaza222', '냉장고4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고65', '가전제품', '냉장고', '/resources/images/product/refrigerator5.jpg', '2000-03-31', 'LG전자', 1000000, 360.5,  'papayaza222', '냉장고5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고66', '가전제품', '냉장고', '/resources/images/product/refrigerator6.jpg', '2000-03-31', 'LG전자', 120000, 350.5,  'papayaza222', '냉장고6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고67', '가전제품', '냉장고', '/resources/images/product/refrigerator7.jpg', '2000-03-31', 'LG전자', 700000, 340.5,  'papayaza222', '냉장고7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고68', '가전제품', '냉장고', '/resources/images/product/refrigerator8.jpg', '2000-03-31', 'LG전자', 770000, 390.5,  'papayaza222', '냉장고8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고69', '가전제품', '냉장고', '/resources/images/product/refrigerator9.jpg', '2000-03-31', 'LG전자', 1150000, 380.5,  'papayaza222', '냉장고9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고70', '가전제품', '냉장고', '/resources/images/product/refrigerator10.jpg', '2000-03-31', 'LG전자', 1360000, 360.5,  'papayaza222', '냉장고10입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고71', '가전제품', '냉장고', '/resources/images/product/refrigerator1.jpg', '2000-03-31', 'LG전자', 1500000, 350.5,  'papayaza222', '냉장고1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고72', '가전제품', '냉장고', '/resources/images/product/refrigerator2.jpg', '2000-03-31', 'LG전자', 600000, 320.5,  'papayaza222', '냉장고2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고73', '가전제품', '냉장고', '/resources/images/product/refrigerator3.jpg', '2000-03-31', 'LG전자', 850000, 370.5,  'papayaza222', '냉장고3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고74', '가전제품', '냉장고', '/resources/images/product/refrigerator4.jpg', '2000-03-31', 'LG전자', 900000, 330.5,  'papayaza222', '냉장고4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고75', '가전제품', '냉장고', '/resources/images/product/refrigerator5.jpg', '2000-03-31', 'LG전자', 1000000, 360.5,  'papayaza222', '냉장고5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고76', '가전제품', '냉장고', '/resources/images/product/refrigerator6.jpg', '2000-03-31', 'LG전자', 120000, 350.5,  'papayaza222', '냉장고6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고77', '가전제품', '냉장고', '/resources/images/product/refrigerator7.jpg', '2000-03-31', 'LG전자', 700000, 340.5,  'papayaza222', '냉장고7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고78', '가전제품', '냉장고', '/resources/images/product/refrigerator8.jpg', '2000-03-31', 'LG전자', 770000, 390.5,  'papayaza222', '냉장고8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고79', '가전제품', '냉장고', '/resources/images/product/refrigerator9.jpg', '2000-03-31', 'LG전자', 1150000, 380.5,  'papayaza222', '냉장고9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고80', '가전제품', '냉장고', '/resources/images/product/refrigerator10.jpg', '2000-03-31', 'LG전자', 1360000, 360.5,  'papayaza222', '냉장고10입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고81', '가전제품', '냉장고', '/resources/images/product/refrigerator1.jpg', '2000-03-31', 'LG전자', 1500000, 350.5,  'papayaza222', '냉장고1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고82', '가전제품', '냉장고', '/resources/images/product/refrigerator2.jpg', '2000-03-31', 'LG전자', 600000, 320.5,  'papayaza222', '냉장고2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고83', '가전제품', '냉장고', '/resources/images/product/refrigerator3.jpg', '2000-03-31', 'LG전자', 850000, 370.5,  'papayaza222', '냉장고3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고84', '가전제품', '냉장고', '/resources/images/product/refrigerator4.jpg', '2000-03-31', 'LG전자', 900000, 330.5,  'papayaza222', '냉장고4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고85', '가전제품', '냉장고', '/resources/images/product/refrigerator5.jpg', '2000-03-31', 'LG전자', 1000000, 360.5,  'papayaza222', '냉장고5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고86', '가전제품', '냉장고', '/resources/images/product/refrigerator6.jpg', '2000-03-31', 'LG전자', 120000, 350.5,  'papayaza222', '냉장고6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고87', '가전제품', '냉장고', '/resources/images/product/refrigerator7.jpg', '2000-03-31', 'LG전자', 700000, 340.5,  'papayaza222', '냉장고7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고88', '가전제품', '냉장고', '/resources/images/product/refrigerator8.jpg', '2000-03-31', 'LG전자', 770000, 390.5,  'papayaza222', '냉장고8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고89', '가전제품', '냉장고', '/resources/images/product/refrigerator9.jpg', '2000-03-31', 'LG전자', 1150000, 380.5,  'papayaza222', '냉장고9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고90', '가전제품', '냉장고', '/resources/images/product/refrigerator10.jpg', '2000-03-31', 'LG전자', 1360000, 360.5,  'papayaza222', '냉장고10입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고91', '가전제품', '냉장고', '/resources/images/product/refrigerator1.jpg', '2000-03-31', 'LG전자', 1500000, 350.5,  'papayaza222', '냉장고1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고92', '가전제품', '냉장고', '/resources/images/product/refrigerator2.jpg', '2000-03-31', 'LG전자', 600000, 320.5,  'papayaza222', '냉장고2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고93', '가전제품', '냉장고', '/resources/images/product/refrigerator3.jpg', '2000-03-31', 'LG전자', 850000, 370.5,  'papayaza222', '냉장고3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고94', '가전제품', '냉장고', '/resources/images/product/refrigerator4.jpg', '2000-03-31', 'LG전자', 900000, 330.5,  'papayaza222', '냉장고4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고95', '가전제품', '냉장고', '/resources/images/product/refrigerator5.jpg', '2000-03-31', 'LG전자', 1000000, 360.5,  'papayaza222', '냉장고5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고96', '가전제품', '냉장고', '/resources/images/product/refrigerator6.jpg', '2000-03-31', 'LG전자', 120000, 350.5,  'papayaza222', '냉장고6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고97', '가전제품', '냉장고', '/resources/images/product/refrigerator7.jpg', '2000-03-31', 'LG전자', 700000, 340.5,  'papayaza222', '냉장고7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고98', '가전제품', '냉장고', '/resources/images/product/refrigerator8.jpg', '2000-03-31', 'LG전자', 770000, 390.5,  'papayaza222', '냉장고8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고99', '가전제품', '냉장고', '/resources/images/product/refrigerator9.jpg', '2000-03-31', 'LG전자', 1150000, 380.5,  'papayaza222', '냉장고9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고100', '가전제품', '냉장고', '/resources/images/product/refrigerator10.jpg', '2000-03-31', 'LG전자', 1360000, 360.5,  'papayaza222', '냉장고10입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고101', '가전제품', '냉장고', '/resources/images/product/refrigerator1.jpg', '2000-03-31', 'LG전자', 1500000, 350.5,  'papayaza222', '냉장고1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고102', '가전제품', '냉장고', '/resources/images/product/refrigerator2.jpg', '2000-03-31', 'LG전자', 600000, 320.5,  'papayaza222', '냉장고2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고103', '가전제품', '냉장고', '/resources/images/product/refrigerator3.jpg', '2000-03-31', 'LG전자', 850000, 370.5,  'papayaza222', '냉장고3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고104', '가전제품', '냉장고', '/resources/images/product/refrigerator4.jpg', '2000-03-31', 'LG전자', 900000, 330.5,  'papayaza222', '냉장고4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고105', '가전제품', '냉장고', '/resources/images/product/refrigerator5.jpg', '2000-03-31', 'LG전자', 1000000, 360.5,  'papayaza222', '냉장고5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고106', '가전제품', '냉장고', '/resources/images/product/refrigerator6.jpg', '2000-03-31', 'LG전자', 120000, 350.5,  'papayaza222', '냉장고6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고107', '가전제품', '냉장고', '/resources/images/product/refrigerator7.jpg', '2000-03-31', 'LG전자', 700000, 340.5,  'papayaza222', '냉장고7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고108', '가전제품', '냉장고', '/resources/images/product/refrigerator8.jpg', '2000-03-31', 'LG전자', 770000, 390.5,  'papayaza222', '냉장고8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고109', '가전제품', '냉장고', '/resources/images/product/refrigerator9.jpg', '2000-03-31', 'LG전자', 1150000, 380.5,  'papayaza222', '냉장고9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고110', '가전제품', '냉장고', '/resources/images/product/refrigerator10.jpg', '2000-03-31', 'LG전자', 1360000, 360.5,  'papayaza222', '냉장고10입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고111', '가전제품', '냉장고', '/resources/images/product/refrigerator1.jpg', '2000-03-31', 'LG전자', 1500000, 350.5,  'papayaza222', '냉장고1입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고112', '가전제품', '냉장고', '/resources/images/product/refrigerator2.jpg', '2000-03-31', 'LG전자', 600000, 320.5,  'papayaza222', '냉장고2입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고113', '가전제품', '냉장고', '/resources/images/product/refrigerator3.jpg', '2000-03-31', 'LG전자', 850000, 370.5,  'papayaza222', '냉장고3입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고114', '가전제품', '냉장고', '/resources/images/product/refrigerator4.jpg', '2000-03-31', 'LG전자', 900000, 330.5,  'papayaza222', '냉장고4입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고115', '가전제품', '냉장고', '/resources/images/product/refrigerator5.jpg', '2000-03-31', 'LG전자', 1000000, 360.5,  'papayaza222', '냉장고5입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고116', '가전제품', '냉장고', '/resources/images/product/refrigerator6.jpg', '2000-03-31', 'LG전자', 120000, 350.5,  'papayaza222', '냉장고6입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고117', '가전제품', '냉장고', '/resources/images/product/refrigerator7.jpg', '2000-03-31', 'LG전자', 700000, 340.5,  'papayaza222', '냉장고7입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고118', '가전제품', '냉장고', '/resources/images/product/refrigerator8.jpg', '2000-03-31', 'LG전자', 770000, 390.5,  'papayaza222', '냉장고8입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고119', '가전제품', '냉장고', '/resources/images/product/refrigerator9.jpg', '2000-03-31', 'LG전자', 1150000, 380.5,  'papayaza222', '냉장고9입니다');
+INSERT INTO ProductList (ProductName, MainCategory, SmallCategory, ImagePath, ProdDate, MfCompany, Price, Weight, RegisterID, comment) 
+VALUES ('냉장고120', '가전제품', '냉장고', '/resources/images/product/refrigerator10.jpg', '2000-03-31', 'LG전자', 1360000, 360.5,  'papayaza222', '냉장고10입니다');
+insert into refrigerator values(141, 930, 550, '4도어냉장고', 26.5, '1등급');
+insert into refrigerator values(142, 740, 650, '3도어냉장고', 22.5, '1등급');
+insert into refrigerator values(143, 910, 550, '일반형냉장고', 25.5, '2등급');
+insert into refrigerator values(144, 680, 450, '양문형냉장고', 30.5, '2등급');
+insert into refrigerator values(145, 410, 350, '일반형냉장고', 27.5, '3등급');
+insert into refrigerator values(146, 640, 250, '양문형냉장고', 25.5, '3등급');
+insert into refrigerator values(147, 350, 450, '양문형냉장고', 23.4, '4등급');
+insert into refrigerator values(148, 670, 350, '3도어냉장고', 26.7, '4등급');
+insert into refrigerator values(149, 890, 650, '4도어냉장고', 31.7, '5등급');
+insert into refrigerator values(150, 450, 550, '일반형냉장고', 24.9, '5등급');
+insert into refrigerator values(151, 930, 550, '4도어냉장고', 26.5, '1등급');
+insert into refrigerator values(152, 740, 650, '3도어냉장고', 22.5, '1등급');
+insert into refrigerator values(153, 910, 550, '일반형냉장고', 25.5, '2등급');
+insert into refrigerator values(154, 680, 450, '양문형냉장고', 30.5, '2등급');
+insert into refrigerator values(155, 410, 350, '일반형냉장고', 27.5, '3등급');
+insert into refrigerator values(156, 640, 250, '양문형냉장고', 25.5, '3등급');
+insert into refrigerator values(157, 350, 450, '양문형냉장고', 23.4, '4등급');
+insert into refrigerator values(158, 670, 350, '3도어냉장고', 26.7, '4등급');
+insert into refrigerator values(159, 890, 650, '4도어냉장고', 31.7, '5등급');
+insert into refrigerator values(160, 450, 550, '일반형냉장고', 24.9, '5등급');
+insert into refrigerator values(161, 930, 550, '4도어냉장고', 26.5, '1등급');
+insert into refrigerator values(162, 740, 650, '3도어냉장고', 22.5, '1등급');
+insert into refrigerator values(163, 910, 550, '일반형냉장고', 25.5, '2등급');
+insert into refrigerator values(164, 680, 450, '양문형냉장고', 30.5, '2등급');
+insert into refrigerator values(165, 410, 350, '일반형냉장고', 27.5, '3등급');
+insert into refrigerator values(166, 640, 250, '양문형냉장고', 25.5, '3등급');
+insert into refrigerator values(167, 350, 450, '양문형냉장고', 23.4, '4등급');
+insert into refrigerator values(168, 670, 350, '3도어냉장고', 26.7, '4등급');
+insert into refrigerator values(169, 890, 650, '4도어냉장고', 31.7, '5등급');
+insert into refrigerator values(170, 450, 550, '일반형냉장고', 24.9, '5등급');
+insert into refrigerator values(171, 930, 550, '4도어냉장고', 26.5, '1등급');
+insert into refrigerator values(172, 740, 650, '3도어냉장고', 22.5, '1등급');
+insert into refrigerator values(173, 910, 550, '일반형냉장고', 25.5, '2등급');
+insert into refrigerator values(174, 680, 450, '양문형냉장고', 30.5, '2등급');
+insert into refrigerator values(175, 410, 350, '일반형냉장고', 27.5, '3등급');
+insert into refrigerator values(176, 640, 250, '양문형냉장고', 25.5, '3등급');
+insert into refrigerator values(177, 350, 450, '양문형냉장고', 23.4, '4등급');
+insert into refrigerator values(178, 670, 350, '3도어냉장고', 26.7, '4등급');
+insert into refrigerator values(179, 890, 650, '4도어냉장고', 31.7, '5등급');
+insert into refrigerator values(180, 450, 550, '일반형냉장고', 24.9, '5등급');
+insert into refrigerator values(181, 930, 550, '4도어냉장고', 26.5, '1등급');
+insert into refrigerator values(182, 740, 650, '3도어냉장고', 22.5, '1등급');
+insert into refrigerator values(183, 910, 550, '일반형냉장고', 25.5, '2등급');
+insert into refrigerator values(184, 680, 450, '양문형냉장고', 30.5, '2등급');
+insert into refrigerator values(185, 410, 350, '일반형냉장고', 27.5, '3등급');
+insert into refrigerator values(186, 640, 250, '양문형냉장고', 25.5, '3등급');
+insert into refrigerator values(187, 350, 450, '양문형냉장고', 23.4, '4등급');
+insert into refrigerator values(188, 670, 350, '3도어냉장고', 26.7, '4등급');
+insert into refrigerator values(189, 890, 650, '4도어냉장고', 31.7, '5등급');
+insert into refrigerator values(190, 450, 550, '일반형냉장고', 24.9, '5등급');
+insert into refrigerator values(191, 930, 550, '4도어냉장고', 26.5, '1등급');
+insert into refrigerator values(192, 740, 650, '3도어냉장고', 22.5, '1등급');
+insert into refrigerator values(193, 910, 550, '일반형냉장고', 25.5, '2등급');
+insert into refrigerator values(194, 680, 450, '양문형냉장고', 30.5, '2등급');
+insert into refrigerator values(195, 410, 350, '일반형냉장고', 27.5, '3등급');
+insert into refrigerator values(196, 640, 250, '양문형냉장고', 25.5, '3등급');
+insert into refrigerator values(197, 350, 450, '양문형냉장고', 23.4, '4등급');
+insert into refrigerator values(198, 670, 350, '3도어냉장고', 26.7, '4등급');
+insert into refrigerator values(199, 890, 650, '4도어냉장고', 31.7, '5등급');
+insert into refrigerator values(200, 450, 550, '일반형냉장고', 24.9, '5등급');
+insert into refrigerator values(201, 930, 550, '4도어냉장고', 26.5, '1등급');
+insert into refrigerator values(202, 740, 650, '3도어냉장고', 22.5, '1등급');
+insert into refrigerator values(203, 910, 550, '일반형냉장고', 25.5, '2등급');
+insert into refrigerator values(204, 680, 450, '양문형냉장고', 30.5, '2등급');
+insert into refrigerator values(205, 410, 350, '일반형냉장고', 27.5, '3등급');
+insert into refrigerator values(206, 640, 250, '양문형냉장고', 25.5, '3등급');
+insert into refrigerator values(207, 350, 450, '양문형냉장고', 23.4, '4등급');
+insert into refrigerator values(208, 670, 350, '3도어냉장고', 26.7, '4등급');
+insert into refrigerator values(209, 890, 650, '4도어냉장고', 31.7, '5등급');
+insert into refrigerator values(210, 450, 550, '일반형냉장고', 24.9, '5등급');
+insert into refrigerator values(211, 930, 550, '4도어냉장고', 26.5, '1등급');
+insert into refrigerator values(212, 740, 650, '3도어냉장고', 22.5, '1등급');
+insert into refrigerator values(213, 910, 550, '일반형냉장고', 25.5, '2등급');
+insert into refrigerator values(214, 680, 450, '양문형냉장고', 30.5, '2등급');
+insert into refrigerator values(215, 410, 350, '일반형냉장고', 27.5, '3등급');
+insert into refrigerator values(216, 640, 250, '양문형냉장고', 25.5, '3등급');
+insert into refrigerator values(217, 350, 450, '양문형냉장고', 23.4, '4등급');
+insert into refrigerator values(218, 670, 350, '3도어냉장고', 26.7, '4등급');
+insert into refrigerator values(219, 890, 650, '4도어냉장고', 31.7, '5등급');
+insert into refrigerator values(220, 450, 550, '일반형냉장고', 24.9, '5등급');
+insert into refrigerator values(221, 930, 550, '4도어냉장고', 26.5, '1등급');
+insert into refrigerator values(222, 740, 650, '3도어냉장고', 22.5, '1등급');
+insert into refrigerator values(223, 910, 550, '일반형냉장고', 25.5, '2등급');
+insert into refrigerator values(224, 680, 450, '양문형냉장고', 30.5, '2등급');
+insert into refrigerator values(225, 410, 350, '일반형냉장고', 27.5, '3등급');
+insert into refrigerator values(226, 640, 250, '양문형냉장고', 25.5, '3등급');
+insert into refrigerator values(227, 350, 450, '양문형냉장고', 23.4, '4등급');
+insert into refrigerator values(228, 670, 350, '3도어냉장고', 26.7, '4등급');
+insert into refrigerator values(229, 890, 650, '4도어냉장고', 31.7, '5등급');
+insert into refrigerator values(230, 450, 550, '일반형냉장고', 24.9, '5등급');
+insert into refrigerator values(231, 930, 550, '4도어냉장고', 26.5, '1등급');
+insert into refrigerator values(232, 740, 650, '3도어냉장고', 22.5, '1등급');
+insert into refrigerator values(233, 910, 550, '일반형냉장고', 25.5, '2등급');
+insert into refrigerator values(234, 680, 450, '양문형냉장고', 30.5, '2등급');
+insert into refrigerator values(235, 410, 350, '일반형냉장고', 27.5, '3등급');
+insert into refrigerator values(236, 640, 250, '양문형냉장고', 25.5, '3등급');
+insert into refrigerator values(237, 350, 450, '양문형냉장고', 23.4, '4등급');
+insert into refrigerator values(238, 670, 350, '3도어냉장고', 26.7, '4등급');
+insert into refrigerator values(239, 890, 650, '4도어냉장고', 31.7, '5등급');
+insert into refrigerator values(240, 450, 550, '일반형냉장고', 24.9, '5등급');
+insert into refrigerator values(241, 930, 550, '4도어냉장고', 26.5, '1등급');
+insert into refrigerator values(242, 740, 650, '3도어냉장고', 22.5, '1등급');
+insert into refrigerator values(243, 910, 550, '일반형냉장고', 25.5, '2등급');
+insert into refrigerator values(244, 680, 450, '양문형냉장고', 30.5, '2등급');
+insert into refrigerator values(245, 410, 350, '일반형냉장고', 27.5, '3등급');
+insert into refrigerator values(246, 640, 250, '양문형냉장고', 25.5, '3등급');
+insert into refrigerator values(247, 350, 450, '양문형냉장고', 23.4, '4등급');
+insert into refrigerator values(248, 670, 350, '3도어냉장고', 26.7, '4등급');
+insert into refrigerator values(249, 890, 650, '4도어냉장고', 31.7, '5등급');
+insert into refrigerator values(250, 450, 550, '일반형냉장고', 24.9, '5등급');
+

@@ -1,0 +1,91 @@
+@CHARSET "UTF-8";
+html,body{width:100%;height:100%}
+body,p,h1,h2,h3,h4,h5,h6,ul,ol,li,dl,dt,dd,table,th,td,form,fieldset,legend,input,textarea,button,select{margin:0;padding:0}
+body,input,textarea,select,button,table{font-family:'돋움',Dotum,AppleGothic,sans-serif;font-size:12px;}
+img,fieldset{border:0}
+ul,ol{list-style:none}
+em,address{font-style:normal}
+a{text-decoration:none}
+a:hover,a:active,a:focus{text-decoration:underline}
+
+/* Style */
+.paginate {
+    padding: 20px 0;
+    text-align: center;
+}
+.paginate a,
+.paginate strong {
+    display: inline-block;
+    border: 1px solid transparent;
+    padding: 6px 8px;
+    color: #666;
+    font-family: verdana,'돋움',Dotum,sans-serif;
+    font-weight: bold;
+    vertical-align: middle;
+}
+.paginate strong {
+    border-color: #4dc136;
+    color: #1fb53a;
+}
+.paginate a:hover {
+    border-color: #dedede;
+}
+.paginate a.first,
+.paginate a.prev,
+.paginate a.next,
+.paginate a.last {
+    border-color: #dedede;
+    font-weight: normal;
+    letter-spacing: -1px;
+}
+.paginate a.first:hover,
+.paginate a.prev:hover,
+.paginate a.next:hover,
+.paginate a.last:hover {
+    border-color: #ccc;
+    text-decoration: none;
+}
+.paginate a span {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border: 4px solid #666;
+}
+.paginate a.first span,
+.paginate a.prev span {
+    border-width: 4px 4px 4px 0;
+    border-color: transparent #666 transparent transparent; 
+}
+.paginate a.next span,
+.paginate a.last span {
+    border-width: 4px 0 4px 4px;
+    border-color: transparent transparent transparent #666; 
+}
+
+.btn_area {
+    margin: 20px;
+}
+.btn_pack {
+    display: inline-block;
+    padding-left: 10px;
+    background: url(/resource/images/admin/btn_pack.gif) no-repeat 0 0;    
+}
+.btn_pack a,
+.btn_pack button,
+.btn_pack input {
+    display: inline-block;
+    height: 24px;
+    padding-right: 10px;
+    border: 0;
+    background: url(/resource/images/admin/btn_pack.gif) no-repeat 100% 0;
+    color: #444;
+    font-family: verdana,'돋움',Dotum,AppleGothic,sans-serif;
+    text-decoration: none;
+    line-height: 24px;
+    cursor: pointer;
+}
+.btn_pack a:hover,
+.btn_pack button:hover,
+.btn_pack input:hover {
+    color: #000;
+}

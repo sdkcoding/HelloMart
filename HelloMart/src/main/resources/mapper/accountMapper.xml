@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hellomart.dao.AccountDAO">
+	
+	<select id="getApplyStatus" resultType="String">
+		SELECT Apply FROM Account WHERE id=#{param1}
+	</select>
+	
+	<select id="countId" resultType="Integer">
+		SELECT COUNT(*) FROM Account WHERE id=#{param1}
+	</select>
+	
+	<select id="countEmail" resultType="Integer">
+		SELECT COUNT(*) FROM Account WHERE Email=#{param1}
+	</select>
+	
+	<select id="getPasswd" resultType="String">
+		SELECT password FROM Account WHERE id=#{param1}
+	</select>
+	
+	<update id="modifyPw">
+		UPDATE Account 
+		SET password = #{param2}
+		WHERE ID = #{param1}
+	</update>
+
+	<update id="updateAccount">
+		UPDATE Account 
+		SET Email=#{email}, PostCode=#{postCode}, RoadAddress=#{roadAddress},
+			DetailAddress=#{detailAddress}, Phone=#{phone}, Name=#{name}, 
+			BirthYear=#{birthYear}, BirthMonth=#{birthMonth}, BirthDay=#{birthDay}, Gender=#{gender}
+		WHERE ID = #{id}
+	</update>
+	
+
+	<select id="findAccount" resultType="Account" parameterType="String">
+		SELECT Password, Role FROM Account WHERE ID = #{id}
+	</select>
+	
+	<insert id="insertAccount">
+		INSERT INTO
+		
+		Account (ID, Password, Email, PostCode, RoadAddress,
+		DetailAddress, Phone, Name, BirthYear, BirthMonth, BirthDay, Gender)
+		
+		VALUES (#{id}, #{password}, #{email},
+		#{postCode}, #{roadAddress}, #{detailAddress},
+		#{phone}, #{name}, #{birthYear}, #{birthMonth}, #{birthDay}, #{gender});
+	</insert>
+	
+	<delete id="deleteAccount">
+		DELETE FROM Account WHERE ID = #{id}
+	</delete>
+	
+	<select id="accountList" resultType="Account">
+		SELECT U.*
+		FROM
+		(
+				SELECT t.*
+				FROM
+				(
+					SELECT @rownum:=@rownum+1 as rownum, S.* 
+					FROM 
+		            (
+							SELECT a.id, a.role, a.apply   
+							FROM Account a
+							<if test="flag == 1">
+							 	<where> 
+								  <if test="id != null">
+								       id like #{id}
+								  </if> 
+								  <if test="accountRole != null">
+								       AND role like #{accountRole}
+								   </if>
+								   <if test="sellerApply != null">
+								       AND apply like #{sellerApply}
+								   </if>
+								</where>
+							</if>
+					)S, (SELECT @rownum := 0) r
+				)t
+		        WHERE t.rownum BETWEEN #{startRow} AND #{endRow}
+		)U	
+	</select>
+	
+	<update id="sellerApproval">
+		UPDATE Account SET Role = 'SELLER' WHERE id = #{id}
+	</update>
+	
+	<update id="sellerProgressDelete">
+		UPDATE Account SET Apply = 'NOTHING' WHERE id = #{id}
+	</update>
+	
+	<select id="accountCount" resultType="java.lang.Integer">
+		SELECT COUNT(*) AS cnt FROM Account
+		<if test="flag == 1">
+		 	<where> 
+			  <if test="id != null">
+			       id like #{id}
+			  </if> 
+			  <if test="accountRole != null">
+			       AND role like #{accountRole}
+			   </if>
+			   <if test="sellerApply != null">
+			       AND apply like #{sellerApply}
+			   </if>
+			</where>
+		</if>
+	</select>
+	
+	<update id="updatePoint">
+		update account
+		<if test='param3.equals("+")'>
+			set points = points + #{param2}
+		</if>
+		<if test='param3.equals("-")'> 
+			set points = points - #{param2}
+		</if>
+		where id = #{param1}
+	</update>
+	
+	<select id="findIdByEmail" resultType="String">
+		select id from account where email = #{param1}
+	</select>
+	
+	<!-- 테스트 목적으로 사용되는 SQL문 -->
+	<select id="count" resultType="java.lang.Integer">
+		SELECT COUNT(*) AS cnt FROM Account
+	</select>
+	
+	<select id="getInfo" resultType="Account">
+		SELECT * FROM Account WHERE ID = #{id};
+	</select>
+	
+	<update id="sellerRegist">
+     	update account set apply = 'SELLER_READY' where id = #{param1}
+  	</update> 
+	
+	<delete id="truncate">
+		TRUNCATE Account
+	</delete>
+	<!-- 테스트 목적으로 사용되는 SQL문 -->
+</mapper>

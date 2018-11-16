@@ -1,0 +1,90 @@
+@CHARSET "UTF-8";
+
+#info_container {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 10px;
+}
+
+#info_container td, #info_container th {
+    border: 1px solid #ddd;
+    padding: 12px;
+}
+
+#info_container tr:nth-child(even){background-color: #f2f2f2;}
+
+#info_container th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: center;
+    width: 30%;
+}
+.btnlogin1 { 
+	display:inline-block;
+	border:1px solid #ddd; 
+	background:#f2f2f2; 
+	color:#333;  
+	font-family: Tahoma, 'Roboto', 'arial'; 
+	font-size:11px; 
+	text-decoration: none; 
+}
+.btnlogin1:hover{ 
+	background:#333;
+	border:1px solid #333; 
+	color:#fff;
+}
+.buttonlogin1 { 
+	width:270px; 
+	margin:37px 250px -10px 250px;
+}
+.buttonlogin1 span a { 
+	width: 100%;
+	line-height: 14px;
+	padding: 10px 0;
+	font-size: 14px;
+	font-weight: bold;
+	text-align: center;
+	letter-spacing:0.5px; 
+	text-decoration: none;
+}
+
+.tooltiptext {
+	visibility: hidden;
+	min-height: 50px;
+	line-height: 20px;
+   	width: 320px;
+   	border:1px solid #ababab;
+	background-color: #fff;
+ 	color: #000;
+	text-align: center;
+	border-radius: 6px;
+	padding: 5px 0;
+	position: absolute;
+	z-index: 1;
+	top: 45%;
+	left: -43%;
+	word-break: break-all;
+	padding: 10px;
+}
+
+.tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 15px;
+    right: -4%;
+    border-width: 6px;
+    border-style: solid;
+    border-color: transparent transparent transparent #ababab;
+}
+
+.joinTooltip:FOCUS + .tooltiptext {
+   	visibility: visible;
+}
+
+.errors {
+	color: red;
+	float: right;
+}
+
+.BLOCK50{width: 100%; height: 50px;}

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hellomart.dao.SellerDAO">
+
+	<delete id="delete">
+		delete from productlist where No = #{param1} and RegisterID = #{param2}
+	</delete>
+
+	<select id="getSellerProductList" resultType="productList" parameterType="HashMap">
+		SELECT U.*
+		FROM
+		(
+				SELECT t.*
+				FROM
+				(
+					SELECT @rownum:=@rownum+1 as rownum, S.* 
+					FROM 
+		            (
+							SELECT *    
+							FROM ProductList 
+							WHERE RegisterID = #{id}
+							ORDER BY RegisterDate DESC
+					)S, (SELECT @rownum := 0) r
+				)t
+		        WHERE t.rownum BETWEEN #{startRow} AND #{endRow}
+		)U
+	</select>
+		
+	<select id="getSellerProductCount" resultType="Integer" parameterType="String">
+		SELECT COUNT(*) FROM ProductList WHERE RegisterID = #{id}
+	</select>
+	
+	<insert id="insertProductInfo" parameterType="productList">
+		INSERT INTO ProductList(ProductName, MainCategory, SmallCategory, ImagePath, ProdDate,
+		MfCompany, Price, Weight, RegisterID, Comment) 
+		VALUES (#{productName}, #{mainCategory}, #{smallCategory}, #{imagePath}, #{prodDate}, 
+		#{mfCompany}, #{price}, #{weight}, #{registerID}, #{comment})
+	</insert>
+	
+	<select id="getNoProductList" resultType="Integer">
+		select MAX(NO) FROM ProductList
+	</select>
+	
+	<insert id="insertPartProductInfo" parameterType="HashMap">
+		${sql}
+	</insert>
+	
+	<select id="getFilePath" parameterType="Integer" resultType="String">
+		SELECT ImagePath FROM ProductList WHERE No = #{no}
+	</select>	
+	
+</mapper>

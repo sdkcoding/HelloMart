@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hellomart.dao.CmtBoardDAO">
+
+	<select id="cmtlist" resultType="CmtBoard">
+	
+		select * from cmtboard where cmtpar=#{param1} order by 1 desc limit #{param2},#{param3}
+			
+	</select>
+	
+	
+	<insert id="cmtinsert" parameterType="CmtBoard">
+		INSERT INTO
+		
+		cmtboard (id, content, cmtpar)
+		
+		VALUES (#{id}, #{content}, #{cmtpar})
+	</insert>
+	
+	<!-- 코멘트 수정 쿼리 -->
+	<update id="cmtmodify">
+		
+		UPDATE cmtboard SET 
+		content=#{content} 
+		WHERE cmtidx=#{cmtidx}
+		
+	</update>
+	
+	<!-- 코멘트 삭제 쿼리 -->
+	<delete id="cmtdelete">
+		DELETE FROM cmtboard WHERE cmtidx = #{cmtidx}
+	</delete>
+	
+	<select id="cmtCount" resultType="Integer">
+		SELECT count(*) FROM cmtboard where cmtpar=#{param1}
+	</select>
+	
+</mapper>
